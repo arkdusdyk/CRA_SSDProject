@@ -7,15 +7,7 @@
 using namespace testing;
 using namespace std;
 
-class IProduct
-{
-public:
-	virtual void Write(int addr, string value) {
-	}
-	virtual string Read(int addr) { return ""; }
-};
-
-class ProductMock : public IProduct {
+class ProductMock : public IProtocol {
 public:
 	MOCK_METHOD(void, Write, (int addr, string value), (override));
 	MOCK_METHOD(string, Read, (int addr), (override));
