@@ -51,3 +51,10 @@ TEST_F(TestShellFixture, writeAwriteB) {
 	testShell.Write(address, expected);
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
+
+TEST_F(TestShellFixture, writeInvalidValue) {
+	int address = 1;
+	string invalidInput = "0x1234GGGG";
+
+	EXPECT_THROW(pMock.Write(address, invalidInput), exception);
+}
