@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <iostream>
+#include <ostream>
 
 #include "../TestShell/TestShell.cpp"
 #include "gtest/gtest.h"
@@ -17,6 +19,7 @@ class TestShellFixture : public Test {
 public:
 	ProductMock pMock;
 	TestShell testShell;
+	SSDProtocol protocol;
 };
 
 
@@ -50,4 +53,15 @@ TEST_F(TestShellFixture, writeAwriteB) {
 	testShell.Write(address, firstInput);
 	testShell.Write(address, expected);
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
+}
+
+TEST_F(TestShellFixture, SSDProtocolRead) {
+	ofstream file;
+	string expected = "0x11223344";
+	string actual;
+	file.open("result.txt");
+	file << "0x11223344" << endl;
+	file.close();
+	actual = protocol.Read(1);
+	EXPECT_EQ(actual, expected);
 }
