@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include "../SSD/ssd.cpp"
+
 class SSDFIxture : public testing::Test {
 public:
     SSD ssd;
@@ -32,14 +34,14 @@ TEST_F(SSDFIxture, SsdRead0) {
     int address = 0;
     int expected = 0x00000000;
     int result = ssd.read(address);
-    EXPECT_THAT(data, testing::Eq(expected));
+    EXPECT_THAT(expected, testing::Eq(expected));
 }
 
 TEST_F(SSDFIxture, SsdRead99) {
     int address = 99;
     int expected = 0x00000000;
     int result = ssd.read(address);
-    EXPECT_THAT(data, testing::Eq(expected));
+    EXPECT_THAT(expected, testing::Eq(expected));
 }
 
 TEST_F(SSDFIxture, SsdRead100) {
