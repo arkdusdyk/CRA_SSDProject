@@ -11,8 +11,6 @@ class ProductMock : public IProtocol {
 public:
 	MOCK_METHOD(void, Write, (int addr, string value), (override));
 	MOCK_METHOD(string, Read, (int addr), (override));
-	MOCK_METHOD(void, FullWrite, (string value), ());
-	MOCK_METHOD(string, FullRead, (), ());
 };
 
 class TestShellFixture : public Test {
@@ -23,10 +21,7 @@ public:
 
 
 TEST_F(TestShellFixture, ReadFailTest) {
-	ProductMock mock;
-
-	EXPECT_THROW(mock.Read(110), exception);
-
+	EXPECT_THROW(pMock.Read(110), exception);
 }
 
 TEST_F(TestShellFixture, writeWrongAddrWrite) {	
