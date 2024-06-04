@@ -7,39 +7,60 @@
 using namespace testing;
 using namespace std;
 
-
-class MockTestShell : public TestShell {
+class IProduct
+{
 public:
-	MOCK_METHOD(void, Write, (int addr, string value), ());
-	MOCK_METHOD(string, Read, (int addr), ());
+	virtual void Write(int addr, string value) {
+	}
+	virtual string Read(int addr) { return ""; }
+};
+
+class ProductMock : public IProduct {
+public:
+	MOCK_METHOD(void, Write, (int addr, string value), (override));
+	MOCK_METHOD(string, Read, (int addr), (override));
 	MOCK_METHOD(void, FullWrite, (string value), ());
 	MOCK_METHOD(string, FullRead, (), ());
 };
 
-TEST(TestCaseName, TestName) {
-	EXPECT_THAT(1, Eq(1));
-}
+class TestShellFixture : public Test {
+public:
+	ProductMock pMock;
+	TestShell testShell;
+};
 
-TEST(ShellReadTest, ReadTest) {
-	MockTestShell mock;
 
-	EXPECT_CALL(mock, Read(0)).WillOnce(Return("Ox00000000"));
-
-	cout << mock.Read(0) << "\n";
-}
-
-TEST(ShellReadTest, ReadFailTest) {
-	MockTestShell mock;
+TEST_F(TestShellFixture, ReadFailTest) {
+	ProductMock mock;
 
 	EXPECT_THROW(mock.Read(110), exception);
 
 }
 
-TEST(ShellReadTest, FullReadTest) {
-	MockTestShell mock;
+TEST_F(TestShellFixture, writeWrongAddrWrite) {	
+	EXPECT_THROW(testShell.Write(-1, "0x123456AB"); , exception);
+}
 
-	EXPECT_CALL(mock, FullRead()).Times(1);
-	EXPECT_CALL(mock, Read(_)).Times(100);
+TEST_F(TestShellFixture, writeA) {
+	int address = 1;
+	string expected = "0x123456AB";
 
-	cout << mock.FullRead() << "\n";
+	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
+	
+	testShell.Write(address, "0x123456AB");
+	EXPECT_THAT(testShell.Read(address), Eq(expected));
+}
+
+TEST_F(TestShellFixture, writeAwriteB) {
+	int address = 1;
+	string firstInput = "0x123456AB";
+	string expected = "0xABCDEFGH";
+
+	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
+
+	EXPECT_CALL(pMock, Write(address, _)).Times(2);
+
+	testShell.Write(address, firstInput);
+	testShell.Write(address, expected);
+	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
