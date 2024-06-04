@@ -10,7 +10,7 @@ public:
 
 	}
 	string Read(int arr) {
-
+		return "";
 	}
 
 	void FulllWrite( string value) {
