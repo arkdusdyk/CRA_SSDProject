@@ -1,11 +1,51 @@
 #include <iostream>
-#include <vector>
+#include <fstream>
 #include <string>
 
 using namespace std;
 
+__interface IProtocol
+{
+	virtual void Write(int addr, string value) = 0;
+	virtual string Read(int addr) = 0;
+};
+
+class SSDProtocol : public IProtocol
+{
+public:
+	virtual void Write(int addr, string value) override {
+		string cmd;
+		cmd.append(mExecuteName + " W " + std::to_string(addr) + " " + value);
+		system(cmd.c_str());
+	}
+
+	virtual string Read(int addr) override {
+		string cmd;
+		cmd.append(mExecuteName + " R " + std::to_string(addr));
+		system(cmd.c_str());
+		ifstream readFile;
+		string result;
+		readFile.open(mReadFileName);
+		if (readFile.is_open()) {
+			string buf;
+			while (getline(readFile, buf)) {
+				result.append(buf);
+			}
+		}
+		readFile.close();
+		return result;
+	}
+private:
+	string mReadFileName = "result.txt";
+	string mExecuteName = "ssd.exe";
+};
+
 class TestShell {
 public:
+	void setProtocol(IProtocol *iprotocol) {
+		iprotocol = iprotocol;
+	}
+
 	void Write(int arr, string value) {
 	}
 	string Read(int arr) {
@@ -19,43 +59,6 @@ public:
 	string FullRead(string value) {
 
 	}
-
 private:
-	string cmd;
-	int lba;
-	string data;
-	void command_parse(string cmd_line){
-		int prev = 0;
-		int cur = 0;
-		vector<string> tokens;
-		tokens.clear();
-		cur = cmd_line.find(' ');
-		while (cur != string::npos) {
-			string substring = cmd_line.substr(prev, cur - prev);
-			tokens.push_back(substring);
-			prev = cur + 1;
-			cur = cmd_line.find(' ', prev);
-		}
-		if (tokens.empty())
-			throw exception("No Command\n");
-		cmd = tokens[0];
-
-		if (cmd == "write" || cmd == "read" || cmd == "fullwrite" || cmd == "fullread") {
-			if (cmd == "write") {
-			}
-			else if (cmd == "read") {
-
-			}
-			else if (cmd == "fullwrite") {
-
-			}
-			else if (cmd == "fullread") {
-
-			}
-		}
-		else if (cmd == "exit" || cmd == "help") {
-		}
-		else
-			throw exception("Invalid Command");
-	}
+	IProtocol* iprotocol;
 };
