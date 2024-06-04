@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 using namespace std;
 
@@ -42,13 +43,41 @@ public:
 	}
 
 	void write(int address, int data) {
-		string ssdData[100];
+		vector<string> ssdData;
 
 		if (address < 0 || address >= 100)
 			throw out_of_range("address range is 0 <= address <= 99");
 
-		/* First write case */
+		checkDataInit();
+		ssdData = getSsdData();
+
+		stringstream dataToHex;
+		dataToHex << std::hex << data;
+		ssdData[address] = dataToHex.str();
+		setSsdData(ssdData);
+	}
+
+	int read(int address) {
+		vector<string> ssdData;
+		int data = 0;
+
+		if (address < 0 || address >= 100)
+			throw out_of_range("address range is 0 <= address <= 99");
+
+		checkDataInit();
+		ssdData = getSsdData();
+		writeResult(ssdData[address]);
+
+		return stoul(ssdData[address], nullptr, 16);
+	}
+
+private:
+	const string OUTPUT = "result.txt";
+	const string NAND = "nand.txt";
+
+	void checkDataInit() {
 		ifstream checkFile(NAND);
+
 		if (!checkFile.good()) {
 			ofstream firstFile(NAND);
 			for (int i = 0; i < 100; i++) {
@@ -57,61 +86,42 @@ public:
 			firstFile.close();
 		}
 		checkFile.close();
+	}
 
-		/* Get data */
+	vector<string> getSsdData() {
+		vector<string> data;
 		ifstream inFile(NAND);
+
 		if (inFile.is_open()) {
 			string line;
 			int cnt = 0;
 			string readData;
 			while (getline(inFile, line)) {
-				ssdData[cnt++] = line;
+				data.push_back(line);
 			}
 		}
 		inFile.close();
 
-		/* Write data */
-		stringstream dataToHex;
-		dataToHex << std::hex << data;
-		ssdData[address] = dataToHex.str();
+		return data;
+	}
+
+	void setSsdData(vector<string> data) {
 		ofstream outFile(NAND);
+
 		if (outFile.is_open()) {
 			for (int i = 0; i < 100; i++) {
-				outFile << ssdData[i] << endl;
+				outFile << data[i] << endl;
 			}
 		}
 		outFile.close();
 	}
 
-	int read(int address) {
-		string ssdData[100];
-		int data = 0;
-
-		if (address < 0 || address >= 100)
-			throw out_of_range("address range is 0 < address < 100");
-
-		ifstream inFile(NAND);
-		if (inFile.is_open()) {
-			string line;
-			int cnt = 0;
-			string readData;
-			while (getline(inFile, line)) {
-				ssdData[cnt++] = line;
-			}
-		}
-		inFile.close();
-
+	void writeResult(string value) {
 		ofstream outFile(OUTPUT);
-		if (outFile.is_open()) {
-			outFile << ssdData[address] << endl;
 
+		if (outFile.is_open()) {
+			outFile << value << endl;
 		}
 		outFile.close();
-
-		return 0;
 	}
-
-private:
-	const string OUTPUT = "result.txt";
-	const string NAND = "nand.txt";
 };
