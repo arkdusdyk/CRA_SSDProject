@@ -20,7 +20,22 @@ public:
 	static const int COMMAND_READ = 0x2;
 
 	int checkParameter(int argc, char* argv[], CommandSet& commandset) {
-		return 0;
+		if (argc == 4 && string(argv[1]) == "W")
+		{
+			commandset.cmdOpcode = SSD::COMMAND_WRITE;
+			commandset.address = std::stoi(string(argv[2]));
+			commandset.data = static_cast<int>(std::stoll(string(argv[3]), nullptr, 16));
+		}
+		else if (argc == 3 && string(argv[1]) == "R")
+		{
+			commandset.cmdOpcode = SSD::COMMAND_READ;
+			commandset.address = std::stoi(string(argv[2]));
+			commandset.data = -1;
+		}
+		else
+			return COMMAND_VALIDATION_FAIL;
+
+		return COMMAND_VALIDATION_SUCCESS;
 	}
 
 	void write(int address, int data) {
