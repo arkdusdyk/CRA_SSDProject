@@ -5,28 +5,24 @@
 #include "gmock/gmock.h"
 
 using namespace testing;
+using namespace std;
 
-
-class IProduct
-{
-public:
-	virtual void Write(int addr, string value) {
-	}
-	virtual string Read(int addr) { return ""; }
-};
-
-class ProductMock : public IProduct {
+class ProductMock : public IProtocol {
 public:
 	MOCK_METHOD(void, Write, (int addr, string value), (override));
 	MOCK_METHOD(string, Read, (int addr), (override));
 };
-
 
 class TestShellFixture : public Test {
 public:
 	ProductMock pMock;
 	TestShell testShell;
 };
+
+
+TEST_F(TestShellFixture, ReadFailTest) {
+	EXPECT_THROW(pMock.Read(110), exception);
+}
 
 TEST_F(TestShellFixture, writeWrongAddrWrite) {	
 	EXPECT_THROW(testShell.Write(-1, "0x123456AB"); , exception);
