@@ -32,6 +32,7 @@ public:
 				result.append(buf);
 			}
 		}
+		readFile.close();
 		return result;
 	}
 private:
