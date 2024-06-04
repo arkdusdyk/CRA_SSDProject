@@ -22,7 +22,42 @@ public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
 
+	bool isDecimal(const std::string& str) {
+		if (str.empty()) return false;
+
+		for (char c : str) {
+			if (!(std::isdigit(c))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool isHexadecimal(const std::string& str) {
+		if (str.empty()) return false;
+
+		for (char c : str) {
+			if (!(std::isdigit(c) || (std::isalpha(c) && std::toupper(c) >= 'A' && std::toupper(c) <= 'F'))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	int checkParameter(int argc, char* argv[], CommandSet& commandset) {
+
+		if (argc >= 3 && !isDecimal(string(argv[2])))
+		{
+			return COMMAND_VALIDATION_FAIL;
+		}
+
+		if (argc >= 4 && !isHexadecimal(string(argv[3])))
+		{
+			return COMMAND_VALIDATION_FAIL;
+		}
+
 		if (argc == 4 && string(argv[1]) == "W")
 		{
 			commandset.cmdOpcode = SSD::COMMAND_WRITE;
