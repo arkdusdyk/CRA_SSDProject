@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{e1db8e2d-f3fc-4826-9fd1-320d31ce01bc}</ProjectGuid>
+    <ProjectGuid>{8330cb8b-dec4-4a84-993a-51d52b4358ed}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
     <ConfigurationType>Application</ConfigurationType>
@@ -101,6 +101,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\packages\gmock.1.11.0\lib\native\src\gmock\src\gmock_main.cc" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -110,8 +111,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CRA_SSDProject\CRA_SSDProject.vcxproj">
-      <Project>{d5e638e6-00b1-4b3f-87ab-608276222b74}</Project>
+    <ProjectReference Include="..\TestShell\TestShell.vcxproj">
+      <Project>{081bebad-439f-4342-b5e0-1bcbc755af18}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
