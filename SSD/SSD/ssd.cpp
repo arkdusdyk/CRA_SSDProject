@@ -45,7 +45,7 @@ public:
 		string ssdData[100];
 
 		if (address < 0 || address >= 100)
-			throw out_of_range("address range is 0 < address < 100");
+			throw out_of_range("address range is 0 <= address <= 99");
 
 		/* First write case */
 		ifstream checkFile(NAND);
