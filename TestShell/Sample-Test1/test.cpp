@@ -5,17 +5,62 @@
 #include "gmock/gmock.h"
 
 using namespace testing;
+using namespace std;
 
+class IProduct
+{
+public:
+	virtual void Write(int addr, string value) {
+	}
+	virtual string Read(int addr) { return ""; }
+};
 
-class Mock : public TestShell {
+class ProductMock : public IProduct {
 public:
 	MOCK_METHOD(void, Write, (int addr, string value), (override));
 	MOCK_METHOD(string, Read, (int addr), (override));
-	MOCK_METHOD(void, FullWrite, (string value), (override));
-	MOCK_METHOD(string, FullRead, , (override));
+	MOCK_METHOD(void, FullWrite, (string value), ());
+	MOCK_METHOD(string, FullRead, (), ());
+};
+
+class TestShellFixture : public Test {
+public:
+	ProductMock pMock;
+	TestShell testShell;
 };
 
 
-TEST(TestCaseName, TestName) {
-	EXPECT_THAT(1, Eq(1));
+TEST_F(TestShellFixture, ReadFailTest) {
+	ProductMock mock;
+
+	EXPECT_THROW(mock.Read(110), exception);
+
+}
+
+TEST_F(TestShellFixture, writeWrongAddrWrite) {	
+	EXPECT_THROW(testShell.Write(-1, "0x123456AB"); , exception);
+}
+
+TEST_F(TestShellFixture, writeA) {
+	int address = 1;
+	string expected = "0x123456AB";
+
+	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
+	
+	testShell.Write(address, "0x123456AB");
+	EXPECT_THAT(testShell.Read(address), Eq(expected));
+}
+
+TEST_F(TestShellFixture, writeAwriteB) {
+	int address = 1;
+	string firstInput = "0x123456AB";
+	string expected = "0xABCDEFGH";
+
+	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
+
+	EXPECT_CALL(pMock, Write(address, _)).Times(2);
+
+	testShell.Write(address, firstInput);
+	testShell.Write(address, expected);
+	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
