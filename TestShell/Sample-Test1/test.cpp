@@ -135,3 +135,12 @@ TEST_F(TestShellFixture, testApp1) {
 	bool expected = true;
 	EXPECT_TRUE(testShell.testApp1());
 }
+
+TEST_F(TestShellFixture, testApp2) {
+	string pattern = "0x12345678";
+
+	EXPECT_CALL(pMock, Write(_, _)).Times(30);
+	EXPECT_CALL(pMock, Read(_)).WillRepeatedly(Return(pattern));
+
+	EXPECT_TRUE(testShell.testApp2());
+}
