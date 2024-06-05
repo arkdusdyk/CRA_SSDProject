@@ -76,13 +76,14 @@ public:
 	}
 
 private:
+	const int MIN_LBA = 0;
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
 	IProduct* product;
 
 	void checkInvalid_LBA(int arr) {
-		if (arr <0 || arr > MAX_LBA)
+		if (arr < MIN_LBA || arr > MAX_LBA)
 			throw wrongAdrress_exception();
 	}
 
