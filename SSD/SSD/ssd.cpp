@@ -63,13 +63,16 @@ private:
 	void checkDataInit() {
 		ifstream checkFile(NAND);
 
-		if (!checkFile.good()) {
-			ofstream firstFile(NAND);
-			for (int i = 0; i < MAX_ADDRESS; i++) {
-				firstFile << "0" << endl;
-			}
-			firstFile.close();
+		if (checkFile.good()) {
+			checkFile.close();
+			return;
 		}
+
+		ofstream firstFile(NAND);
+		for (int i = 0; i < MAX_ADDRESS; i++) {
+			firstFile << "0" << endl;
+		}
+		firstFile.close();
 		checkFile.close();
 	}
 
@@ -77,11 +80,13 @@ private:
 		vector<string> data;
 		ifstream inFile(NAND);
 
-		if (inFile.is_open()) {
-			string line;
-			while (getline(inFile, line)) {
-				data.push_back(line);
-			}
+		if (!inFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
+		}
+
+		string line;
+		while (getline(inFile, line)) {
+			data.push_back(line);
 		}
 		inFile.close();
 
@@ -95,20 +100,26 @@ private:
 	void setSsdData(vector<string> data) {
 		ofstream outFile(NAND);
 
-		if (outFile.is_open()) {
-			for (int i = 0; i < MAX_ADDRESS; i++) {
-				outFile << data[i] << endl;
-			}
+		if (!outFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
 		}
+
+		for (int i = 0; i < MAX_ADDRESS; i++) {
+			outFile << data[i] << endl;
+		}
+
 		outFile.close();
 	}
 
 	void writeResult(string value) {
 		ofstream outFile(OUTPUT);
 
-		if (outFile.is_open()) {
-			outFile << value << endl;
+		if (!outFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
 		}
+		
+		outFile << value << endl;
+
 		outFile.close();
 	}
 };
