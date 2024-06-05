@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <regex>
 
 #include "ProductInterface.h"
 #include "TestShell_Exception.h"
@@ -14,6 +15,7 @@ public:
 
 	void Write(int arr, string value) {
 		checkInvalid_LBA(arr);
+		checkInvalid_Value(value);
 		product->Write(arr, value);
 	}
 
@@ -82,5 +84,11 @@ private:
 	void checkInvalid_LBA(int arr) {
 		if (arr <0 || arr > MAX_LBA)
 			throw wrongAdrress_exception();
+	}
+
+	void checkInvalid_Value(string value) {
+		std::regex reg("0x[0-9A-F]{8}$");
+		if (!regex_match(value, reg))
+			throw wrongValue_exception();
 	}
 };

@@ -130,7 +130,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProductInterface.h" />
     <ClCompile Include="TestShell.cpp" />
-    <ClCompile Include="TestShell_Execption.h" />
+    <ClCompile Include="TestShell_Exception.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

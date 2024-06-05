@@ -48,9 +48,15 @@ public:
 };
 
 
-TEST_F(TestShellFixture, ReadFailTest) {
-	EXPECT_CALL(pMock, Read(_)).Times(1);
-	EXPECT_THROW(pMock.Read(110), exception);
+TEST_F(TestShellFixture, readInvalidValue) {
+	//EXPECT_CALL(pMock, Read(_)).Times(1);
+	EXPECT_THROW(testShell.Read(110), exception);
+}
+
+TEST_F(TestShellFixture, writeInvalidValue) {
+	int address = 1;
+	string invalidInput = "0x1234GGGG";
+	EXPECT_THROW(testShell.Write(address, invalidInput), exception);
 }
 
 TEST_F(TestShellFixture, writeWrongAddr) {
@@ -70,7 +76,7 @@ TEST_F(TestShellFixture, writeA) {
 TEST_F(TestShellFixture, writeAwriteB) {
 	int address = 1;
 	string firstInput = "0x123456AB";
-	string expected = "0xABCDEFGH";
+	string expected = "0xABCDEF12";
 
 	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
 
@@ -78,14 +84,6 @@ TEST_F(TestShellFixture, writeAwriteB) {
 	testShell.Write(address, firstInput);
 	testShell.Write(address, expected);
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
-}
-
-
-TEST_F(TestShellFixture, writeInvalidValue) {
-	int address = 1;
-	string invalidInput = "0x1234GGGG";
-	EXPECT_CALL(pMock, Write(address, _)).Times(1);
-	EXPECT_THROW(pMock.Write(address, invalidInput), exception);
 }
 
 TEST_F(TestShellFixture, fullWrite) {
