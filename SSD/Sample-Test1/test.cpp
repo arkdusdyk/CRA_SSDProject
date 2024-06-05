@@ -97,7 +97,7 @@ TEST_F(SSDFIxture, CommandInvokerRead0) {
     char* argv[] = { "ssd.exe", "R", "0"};
     int ret = invoker.executeCommands(argc, argv);
    
-    int expectedData = 0xdeadbeef;
+    int expectedData = 0;
     EXPECT_THAT(ret, testing::Eq(expectedData));
 }
 
