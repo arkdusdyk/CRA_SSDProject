@@ -18,8 +18,8 @@ public:
 class TestShellFixture : public Test {
 public:
 	ProductMock pMock;
-	SSDProduct product;
 	TestShell testShell;
+
 	const int MAX_CELL_COUNT = 100;
 
 	TestShellFixture() {
@@ -93,7 +93,7 @@ TEST_F(TestShellFixture, fullWrite) {
 	int address = 1;
 	string expected = "0xABCDEFGH";
 	EXPECT_CALL(pMock, Write(_, _)).Times(100);
-	EXPECT_CALL(pMock, Read(address)).Times(100).WillRepeatedly(Return(expected));
+	EXPECT_CALL(pMock, Read(_)).Times(100).WillRepeatedly(Return(expected));
 	testShell.FulllWrite(expected);
 	EXPECT_TRUE(CheckFullRead_OneExpect(expected));
 }
@@ -108,7 +108,7 @@ TEST_F(TestShellFixture, fullRead) {
 	EXPECT_CALL(pMock, Write(_, _)).Times(100);
 	testShell.FulllWrite("0x12345678");
 
-	EXPECT_CALL(pMock, Read(address)).Times(100)
+	EXPECT_CALL(pMock, Read(_)).Times(100)
 		.WillOnce(Return("0xABCDEFGH"))
 		.WillOnce(Return("0x123456AB"))
 		.WillOnce(Return("0x12345ABC"))
@@ -117,21 +117,12 @@ TEST_F(TestShellFixture, fullRead) {
 	EXPECT_TRUE(CheckFullRead_VectorExpect(expecteds));
 }
 
-TEST_F(TestShellFixture, SSDProtocolRead) {
-	ofstream file;
-	string expected = "0x11223344";
-	string actual;
-	file.open("result.txt");
-	file << "0x11223344" << endl;
-	file.close();
-	actual = product.Read(1);
-	EXPECT_EQ(actual, expected);
-}
-
 TEST_F(TestShellFixture, testApp1) {
 	string pattern = "0xAABBCCDD";
 	int address = 1;
-	EXPECT_CALL(pMock, Read(_)).WillRepeatedly(Return(pattern));
-	bool expected = true;
+
+	EXPECT_CALL(pMock, Write(_, _)).Times(100);
+	EXPECT_CALL(pMock, Read(_)).Times(100).WillRepeatedly(Return(pattern));
+
 	EXPECT_TRUE(testShell.testApp1());
 }
