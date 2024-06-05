@@ -15,7 +15,7 @@ public:
 		CommandSet cmd;
 		int ret = checkParameter(argc, argv, cmd);
 		if (ret == ICommand::COMMAND_VALIDATION_SUCCESS)
-			return storage->read(cmd.address);
+			storage->read(cmd.address);
 		return ret;
 	}
 
