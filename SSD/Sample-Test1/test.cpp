@@ -84,6 +84,33 @@ TEST_F(SSDFIxture, SsdBrokenFile) {
         }, ssd_exception);
 }
 
+TEST_F(SSDFIxture, CommandInvokerEmptyCommand) {
+    int argc = 1;
+    char* argv[] = { "ssd.exe" };
+
+    EXPECT_THROW({
+        invoker.executeCommands(argc, argv);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerEmptyArgument) {
+    int argc = 1;
+    char* argv[] = { "ssd.exe", "W"};
+
+    EXPECT_THROW({
+        invoker.executeCommands(argc, argv);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerLessArgument) {
+    int argc = 1;
+    char* argv[] = { "ssd.exe", "W", "0"};
+
+    EXPECT_THROW({
+        invoker.executeCommands(argc, argv);
+        }, ssd_exception);
+}
+
 TEST_F(SSDFIxture, CommandInvokerWrite0) {
     int argc = 4;
     char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef"};

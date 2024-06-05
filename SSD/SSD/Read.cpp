@@ -5,6 +5,11 @@ public:
 	virtual string getCommandCode() const override {
 		return COMMAND_CODE;
 	}
+
+	virtual string getHelpMessage() const override {
+		return HELP;
+	}
+
 	virtual int execute(int argc, char* argv[], SSD* ssd)
 	{
 		CommandSet cmd;
@@ -16,4 +21,5 @@ public:
 
 private:
 	static constexpr char COMMAND_CODE[] = "R";
+	static constexpr char HELP[] = "[Read] ssd R [address: 0~99]";
 };

@@ -5,20 +5,15 @@
 #include <stdexcept>
 #include <vector>
 
+#include "ssdexcept.h"
+
 using namespace std;
 
-
-class ssd_exception : public std::exception {
-private:
-	std::string what_message;
-public:
-	ssd_exception(char const* const message) {
-		what_message = message;
-	}
-	const char* what() const override
-	{
-		return what_message.c_str();
-	}
+struct CommandSet
+{
+	int cmdOpcode;
+	int address;
+	int data;
 };
 
 class SSD {
@@ -62,7 +57,7 @@ private:
 		{
 			string errorMessage = "address range is ";
 			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
-			throw ssd_exception(errorMessage.c_str());
+			throw ssd_exception(errorMessage);
 		}
 	}
 
