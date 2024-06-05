@@ -135,8 +135,11 @@
     <ClCompile Include="Invoker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Read.cpp" />
-    <ClCompile Include="ssd.cpp" />
+    <ClCompile Include="storage.cpp" />
     <ClCompile Include="Write.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ssdexcept.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

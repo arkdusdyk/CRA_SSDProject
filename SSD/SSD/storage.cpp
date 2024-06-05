@@ -2,42 +2,50 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 #include <stdexcept>
 #include <vector>
 
+#include "ssdexcept.h"
+
 using namespace std;
 
-
-class ssd_exception : public std::exception {
-private:
-	std::string what_message;
-public:
-	ssd_exception(char const* const message) {
-		what_message = message;
-	}
-	const char* what() const override
-	{
-		return what_message.c_str();
-	}
+struct CommandSet
+{
+	int cmdOpcode;
+	int address;
+	int data;
 };
 
-class SSD {
+#define interface struct
+
+const enum DeviceType {
+	TYPE_SSD,
+};
+
+interface Storage {
+	virtual void write(int address, int data) = 0;
+	virtual int read(int address) = 0;
+};
+
+class SSD : public Storage {
 public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
+	static const int CLEAN_PAGE_DATA = 0;
 
-	void write(int address, int data) {
+	void write(int address, int data) override {
 		vector<string> ssdData;
 
 		checkingValidLba(address);
 
 		checkDataInit();
 		ssdData = getSsdData();
-		ssdData[address] = IntToHexString(data);
+		ssdData[address] = IntToHexUppercaseString(data);
 		setSsdData(ssdData);
 	}
 
-	int read(int address) {
+	int read(int address) override {
 		vector<string> ssdData;
 
 		checkingValidLba(address);
@@ -62,7 +70,7 @@ private:
 		{
 			string errorMessage = "address range is ";
 			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
-			throw ssd_exception(errorMessage.c_str());
+			throw ssd_exception(errorMessage);
 		}
 	}
 
@@ -76,7 +84,7 @@ private:
 
 		ofstream firstFile(NAND);
 		for (int i = MIN_LBA; i <= MAX_LBA; i++) {
-			firstFile << "0" << endl;
+			firstFile << IntToHexUppercaseString(CLEAN_PAGE_DATA) << endl;
 		}
 		firstFile.close();
 		checkFile.close();
@@ -129,11 +137,28 @@ private:
 		outFile.close();
 	}
 
-	std::string IntToHexString(int data)
+	std::string IntToHexUppercaseString(int data)
 	{
 		std::stringstream dataToHex;
-		dataToHex << std::hex << data;
+		dataToHex << "0x" << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << data;
 		return dataToHex.str();
 	}
 
+};
+
+interface Device {
+	virtual Storage* setDevice(enum DeviceType) = 0;
+};
+
+class StorageDevice : public Device {
+public:
+	Storage* setDevice(enum DeviceType type) {
+		if (type == TYPE_SSD) {
+			return new SSD();
+		}
+		return nullptr;
+	}
+
+private:
+	Storage* storage;
 };

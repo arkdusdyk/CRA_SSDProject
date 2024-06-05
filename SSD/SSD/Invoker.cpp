@@ -1,37 +1,38 @@
+#include <iostream>
 #include <vector>
 #include <memory>
 #include "ICommand.h"
+#include "ssdexcept.h"
 
 class CommandInvoker {
 private:
     std::vector<std::unique_ptr<ICommand>> commands;
-    SSD* ssd = nullptr;
+    Storage* storage = nullptr;
 
 public:
-    CommandInvoker(SSD* ssd) : ssd(ssd) {}
+    CommandInvoker(Storage* storage) : storage(storage) {}
     void addCommand(unique_ptr<ICommand> command) {
         commands.push_back(std::move(command));
     }
 
     int executeCommands(int argc, char* argv[]) {
-        int ret = commandValidation(argc, argv);
-        if (ret == ICommand::COMMAND_VALIDATION_FAIL)
-            return ret;
+        if (argc <= 1)
+            throw ssd_exception("[Argument Validation] Empty Command Code");
 
         for (const auto& command : commands) {
-            if (argv[1] == command->getCommandCode())
+            if (argc >= 2 && argv[1] == command->getCommandCode())
             {
-                ret = command->execute(argc, argv, ssd);
-                return ret;
+                return command->execute(argc, argv, storage);
             }
         }
-        return 0;
+        throw ssd_exception(string("[Argument Validation] Invalid Command Code: ") + argv[1]);
     }
-private:
-    int commandValidation(int argc, char* argv[])
-    {
-        if (argc < 3 || argc > 5)
-            return ICommand::COMMAND_VALIDATION_FAIL;
-        return ICommand::COMMAND_VALIDATION_SUCCESS;
+
+    void printHelp() {
+        std::cout << "======================= Help =======================" << std::endl;
+        for (const auto& command : commands) {
+                std::cout << command->getHelpMessage() << std::endl;
+        }
+        std::cout << "====================================================" << std::endl;
     }
 };
