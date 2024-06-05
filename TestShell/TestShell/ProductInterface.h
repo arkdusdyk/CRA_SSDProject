@@ -20,7 +20,7 @@ public:
 	virtual void Write(int addr, string value) override {		
 		string cmd = curPath;
 		cmd.append(mExecuteName + " W " + std::to_string(addr) + " " + value);
-		if (system(cmd.c_str()) < 0)
+		if (system(cmd.c_str()) != 0)
 			cout << "실행파일을 실행하지 못했습니다." << endl;
 		
 	}
@@ -28,7 +28,7 @@ public:
 	virtual string Read(int addr) override {
 		string cmd = curPath;
 		cmd.append(mExecuteName + " R " + std::to_string(addr));
-		if (system(cmd.c_str()) < 0)
+		if (system(cmd.c_str()) != 0)
 			cout << "실행파일을 실행하지 못했습니다." << endl;
 		ifstream readFile;
 		string result;
