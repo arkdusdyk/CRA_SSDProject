@@ -17,11 +17,17 @@ public:
 
     SSD ssd;
     CommandInvoker invoker{ &ssd };
-    void SetUp()
-    {
+    void SetUp() override {
         invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
         invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
     }
+
+    void TearDown() override {
+        LPCWSTR nandPath = L"nand.txt";
+        LPCWSTR outputPath = L"result.txt";
+        DeleteFile(nandPath);
+        DeleteFile(outputPath);
+    };
 };
 
 TEST_F(SSDFIxture, SsdWrite0) {
@@ -76,9 +82,6 @@ TEST_F(SSDFIxture, SsdBrokenFile) {
     EXPECT_THROW({
          ssd.read(0);
         }, ssd_exception);
-
-    LPCWSTR path = L"nand.txt";
-    DeleteFile(path);
 }
 
 TEST_F(SSDFIxture, CommandInvokerWrite0) {
