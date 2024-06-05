@@ -18,7 +18,7 @@ public:
 class TestShellFixture : public Test {
 public:
 	ProductMock pMock;
-    SSDProtocol protocol;
+	SSDProduct product;
 	TestShell testShell;
 	const int MAX_CELL_COUNT = 100;
 
@@ -125,6 +125,6 @@ TEST_F(TestShellFixture, SSDProtocolRead) {
 	file.open("result.txt");
 	file << "0x11223344" << endl;
 	file.close();
-	actual = protocol.Read(1);
+	actual = product.Read(1);
 	EXPECT_EQ(actual, expected);
 }
