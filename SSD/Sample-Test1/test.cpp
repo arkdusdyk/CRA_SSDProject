@@ -17,8 +17,7 @@ public:
 
     SSD ssd;
     CommandInvoker invoker{ &ssd };
-    void SetUp()
-    {
+    void SetUp() override {
         invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
         invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
     }
