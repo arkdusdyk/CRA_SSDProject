@@ -108,8 +108,9 @@ TEST_F(TestShellFixture, fullRead) {
 		.WillOnce(Return("0x123456AB"))
 		.WillOnce(Return("0x12345ABC"))
 		.WillRepeatedly(Return("0x00000000"));
-	
+
 	EXPECT_TRUE(CheckFullRead_VectorExpect(expecteds));
+}
 
 TEST_F(TestShellFixture, SSDProtocolRead) {
 	ofstream file;
