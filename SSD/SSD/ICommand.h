@@ -15,6 +15,7 @@ public:
 	static const int COMMAND_VALIDATION_FAIL = -1;
 
 	virtual string getCommandCode() const = 0;
+	virtual string getHelpMessage() const = 0;
 	virtual int execute(int argc, char* argv[], SSD *ssd) = 0;
 
 protected:

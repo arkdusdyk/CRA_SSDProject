@@ -14,6 +14,12 @@ int main(int argc, char* argv[])
 
     invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
     invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
+ 
+    if (argc < 2) {
+        invoker.printHelp();
+        return 0;
+    }
+
     try {
         return invoker.executeCommands(argc, argv);
     }

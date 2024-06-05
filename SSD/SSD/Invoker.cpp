@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <memory>
 #include "ICommand.h"
@@ -25,5 +26,13 @@ public:
             }
         }
         throw ssd_exception(string("[Argument Validation] Invalid Command Code: ") + argv[1]);
+    }
+
+    void printHelp() {
+        std::cout << "======================= Help =======================" << std::endl;
+        for (const auto& command : commands) {
+                std::cout << command->getHelpMessage() << std::endl;
+        }
+        std::cout << "====================================================" << std::endl;
     }
 };
