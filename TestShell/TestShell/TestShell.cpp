@@ -37,12 +37,12 @@ public:
 
 	bool testApp1() {
 		bool ret = false;
-		FulllWrite(TEST_PATTERN);
+		FulllWrite(TEST_PATTERN_TESTAPP1);
 		vector<string> readResult = FullRead();
 		if (readResult.size() != MAX_LBA) return false;
 
 		for (int lba = 0; lba < MAX_LBA; lba++) {
-			if (readResult[lba] != TEST_PATTERN) return false;
+			if (readResult[lba] != TEST_PATTERN_TESTAPP1) return false;
 		}
 		return true;
 	}
@@ -71,7 +71,7 @@ public:
 
 private:
 	const int MAX_LBA = 100;
-	const string TEST_PATTERN = ("0xAABBCCDD");
+	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
 	IProduct* product;
 };
