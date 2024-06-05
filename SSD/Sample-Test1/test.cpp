@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <windows.h>
 
 #include "../SSD/ICommand.h"
 #include "../SSD/Invoker.cpp"
@@ -10,6 +11,9 @@
 
 class SSDFIxture : public testing::Test {
 public:
+    const string OUTPUT = "result.txt";
+    const string NAND = "nand.txt";
+
     SSD ssd;
     CommandInvoker invoker{ &ssd };
     void SetUp()
@@ -36,7 +40,7 @@ TEST_F(SSDFIxture, SsdWrite100) {
     int data = 0xdeadbeef;
     EXPECT_THROW({
          ssd.write(address, data);
-        }, std::out_of_range);
+        }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, SsdRead0) {
@@ -58,7 +62,22 @@ TEST_F(SSDFIxture, SsdRead100) {
     int expected = 0x00000000;
     EXPECT_THROW({
          ssd.read(address);
-        }, std::out_of_range);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, SsdBrokenFile) {
+    ofstream testFile(NAND);
+    for (int i = 0; i < 1; i++) {
+        testFile << "0" << endl;
+    }
+    testFile.close();
+
+    EXPECT_THROW({
+         ssd.read(0);
+        }, ssd_exception);
+
+    LPCWSTR path = L"nand.txt";
+    DeleteFile(path);
 }
 
 TEST_F(SSDFIxture, CommandInvokerWrite0) {
@@ -84,7 +103,7 @@ TEST_F(SSDFIxture, CommandInvokerWrite100) {
 
     EXPECT_THROW({
          invoker.executeCommands(argc, argv);
-        }, std::out_of_range);
+        }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, CommandInvokerRead100) {
@@ -93,5 +112,5 @@ TEST_F(SSDFIxture, CommandInvokerRead100) {
 
     EXPECT_THROW({
          invoker.executeCommands(argc, argv);
-        }, std::out_of_range);
+        }, ssd_exception);
 }
