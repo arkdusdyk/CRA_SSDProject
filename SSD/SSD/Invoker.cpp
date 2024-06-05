@@ -17,11 +17,9 @@ public:
             if (argv[1] == command->getCommandCode())
             {
                 int ret = command->execute(argc, argv, ssd);
-                commands.clear();
                 return ret;
             }
         }
-        commands.clear();
         return 0;
     }
 private:
