@@ -12,7 +12,10 @@ int main() {
 	CommandParser cp;
 	while (1) {
 		try {
+			cout << "> ";
 			getline(cin, input_cmd);
+			if (input_cmd == "")
+				continue;
 			cp.command_parse(input_cmd);
 			if (cp.cmd == "exit")
 				break;
