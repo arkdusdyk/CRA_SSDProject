@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ssdexcept.h"
-#include "ssd.cpp"
+#include "storage.cpp"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ public:
 
 	virtual string getCommandCode() const = 0;
 	virtual string getHelpMessage() const = 0;
-	virtual int execute(int argc, char* argv[], SSD *ssd) = 0;
+	virtual int execute(int argc, char* argv[], Storage* storage) = 0;
 
 protected:
 	bool IsValidData(const string value) {

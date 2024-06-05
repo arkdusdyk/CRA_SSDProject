@@ -10,12 +10,12 @@ public:
 		return HELP;
 	}
 
-	virtual int execute(int argc, char* argv[], SSD* ssd)
+	virtual int execute(int argc, char* argv[], Storage* storage)
 	{
 		CommandSet cmd;
 		int ret = checkParameter(argc, argv, cmd);
 		if (ret == ICommand::COMMAND_VALIDATION_SUCCESS)
-			ssd->write(cmd.address, cmd.data);
+			storage->write(cmd.address, cmd.data);
 		return ret;
 	}
 
