@@ -49,7 +49,6 @@ public:
 
 
 TEST_F(TestShellFixture, readInvalidValue) {
-	//EXPECT_CALL(pMock, Read(_)).Times(1);
 	EXPECT_THROW(testShell.Read(110), exception);
 }
 
