@@ -4,7 +4,6 @@
 
 class CommandInvoker {
 private:
-    //std::vector<ICommand*> commands;
     std::vector<std::unique_ptr<ICommand>> commands;
 
 public:
