@@ -1,7 +1,9 @@
 #include <stdexcept>
+#include <memory>
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <windows.h>
 
 #include "../SSD/ICommand.h"
 #include "../SSD/Invoker.cpp"
@@ -10,13 +12,22 @@
 
 class SSDFIxture : public testing::Test {
 public:
+    const string OUTPUT = "result.txt";
+    const string NAND = "nand.txt";
+
     SSD ssd;
     CommandInvoker invoker{ &ssd };
-    void SetUp()
-    {
-        invoker.addCommand(new WriteCommand);
-        invoker.addCommand(new ReadCommand);
+    void SetUp() override {
+        invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
+        invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
     }
+
+    void TearDown() override {
+        LPCWSTR nandPath = L"nand.txt";
+        LPCWSTR outputPath = L"result.txt";
+        DeleteFile(nandPath);
+        DeleteFile(outputPath);
+    };
 };
 
 TEST_F(SSDFIxture, SsdWrite0) {
@@ -36,7 +47,7 @@ TEST_F(SSDFIxture, SsdWrite100) {
     int data = 0xdeadbeef;
     EXPECT_THROW({
          ssd.write(address, data);
-        }, std::out_of_range);
+        }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, SsdRead0) {
@@ -58,7 +69,19 @@ TEST_F(SSDFIxture, SsdRead100) {
     int expected = 0x00000000;
     EXPECT_THROW({
          ssd.read(address);
-        }, std::out_of_range);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, SsdBrokenFile) {
+    ofstream testFile(NAND);
+    for (int i = 0; i < 1; i++) {
+        testFile << "0" << endl;
+    }
+    testFile.close();
+
+    EXPECT_THROW({
+         ssd.read(0);
+        }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, CommandInvokerWrite0) {
@@ -74,7 +97,7 @@ TEST_F(SSDFIxture, CommandInvokerRead0) {
     char* argv[] = { "ssd.exe", "R", "0"};
     int ret = invoker.executeCommands(argc, argv);
    
-    int expectedData= 0;
+    int expectedData = 0xdeadbeef;
     EXPECT_THAT(ret, testing::Eq(expectedData));
 }
 
@@ -84,7 +107,7 @@ TEST_F(SSDFIxture, CommandInvokerWrite100) {
 
     EXPECT_THROW({
          invoker.executeCommands(argc, argv);
-        }, std::out_of_range);
+        }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, CommandInvokerRead100) {
@@ -93,5 +116,5 @@ TEST_F(SSDFIxture, CommandInvokerRead100) {
 
     EXPECT_THROW({
          invoker.executeCommands(argc, argv);
-        }, std::out_of_range);
+        }, ssd_exception);
 }
