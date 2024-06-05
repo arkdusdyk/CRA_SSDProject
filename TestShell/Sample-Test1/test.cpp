@@ -9,7 +9,7 @@
 using namespace testing;
 using namespace std;
 
-class ProductMock : public IProtocol {
+class ProductMock : public IProduct {
 public:
 	MOCK_METHOD(void, Write, (int addr, string value), (override));
 	MOCK_METHOD(string, Read, (int addr), (override));
@@ -18,9 +18,13 @@ public:
 class TestShellFixture : public Test {
 public:
 	ProductMock pMock;
-  SSDProtocol protocol;
 	TestShell testShell;
+
 	const int MAX_CELL_COUNT = 100;
+
+	TestShellFixture() {
+		testShell.setProduct(&pMock);
+	}
 
 	bool CheckFullRead_OneExpect(string expected) {
 		vector<string> readvalue = testShell.FullRead();
@@ -44,12 +48,17 @@ public:
 };
 
 
-TEST_F(TestShellFixture, ReadFailTest) {
-	EXPECT_THROW(pMock.Read(110), exception);
+TEST_F(TestShellFixture, readInvalidValue) {
+	EXPECT_THROW(testShell.Read(110), exception);
 }
 
-TEST_F(TestShellFixture, writeWrongAddrWrite) {
-	testShell.setProtocol(&pMock);
+TEST_F(TestShellFixture, writeInvalidValue) {
+	int address = 1;
+	string invalidInput = "0x1234GGGG";
+	EXPECT_THROW(testShell.Write(address, invalidInput), exception);
+}
+
+TEST_F(TestShellFixture, writeWrongAddr) {
 	EXPECT_THROW(testShell.Write(-1, "0x123456AB"); , exception);
 }
 
@@ -58,7 +67,7 @@ TEST_F(TestShellFixture, writeA) {
 	string expected = "0x123456AB";
 
 	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
-	testShell.setProtocol(&pMock);
+	EXPECT_CALL(pMock, Write(address, _)).Times(1);
 	testShell.Write(address, "0x123456AB");
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
@@ -66,30 +75,21 @@ TEST_F(TestShellFixture, writeA) {
 TEST_F(TestShellFixture, writeAwriteB) {
 	int address = 1;
 	string firstInput = "0x123456AB";
-	string expected = "0xABCDEFGH";
+	string expected = "0xABCDEF12";
 
 	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
 
 	EXPECT_CALL(pMock, Write(address, _)).Times(2);
-	testShell.setProtocol(&pMock);
 	testShell.Write(address, firstInput);
 	testShell.Write(address, expected);
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
 
-
-TEST_F(TestShellFixture, writeInvalidValue) {
-	int address = 1;
-	string invalidInput = "0x1234GGGG";
-
-	EXPECT_THROW(pMock.Write(address, invalidInput), exception);
-}
-
 TEST_F(TestShellFixture, fullWrite) {
 	int address = 1;
 	string expected = "0xABCDEFGH";
-	EXPECT_CALL(pMock, Read(address)).Times(100).WillRepeatedly(Return(expected));
-
+	EXPECT_CALL(pMock, Write(_, _)).Times(100);
+	EXPECT_CALL(pMock, Read(_)).Times(100).WillRepeatedly(Return(expected));
 	testShell.FulllWrite(expected);
 	EXPECT_TRUE(CheckFullRead_OneExpect(expected));
 }
@@ -101,9 +101,10 @@ TEST_F(TestShellFixture, fullRead) {
 	expecteds[1] = "0x123456AB";
 	expecteds[2] = "0x12345ABC";
 
+	EXPECT_CALL(pMock, Write(_, _)).Times(100);
 	testShell.FulllWrite("0x12345678");
 
-	EXPECT_CALL(pMock, Read(address)).Times(100)
+	EXPECT_CALL(pMock, Read(_)).Times(100)
 		.WillOnce(Return("0xABCDEFGH"))
 		.WillOnce(Return("0x123456AB"))
 		.WillOnce(Return("0x12345ABC"))
@@ -112,13 +113,21 @@ TEST_F(TestShellFixture, fullRead) {
 	EXPECT_TRUE(CheckFullRead_VectorExpect(expecteds));
 }
 
-TEST_F(TestShellFixture, SSDProtocolRead) {
-	ofstream file;
-	string expected = "0x11223344";
-	string actual;
-	file.open("result.txt");
-	file << "0x11223344" << endl;
-	file.close();
-	actual = protocol.Read(1);
-	EXPECT_EQ(actual, expected);
+TEST_F(TestShellFixture, testApp1) {
+	string pattern = "0xAABBCCDD";
+	int address = 1;
+
+	EXPECT_CALL(pMock, Write(_, _)).Times(100);
+	EXPECT_CALL(pMock, Read(_)).Times(100).WillRepeatedly(Return(pattern));
+
+	EXPECT_TRUE(testShell.testApp1());
+}
+
+TEST_F(TestShellFixture, testApp2) {
+	string pattern = "0x12345678";
+
+	EXPECT_CALL(pMock, Write(_, _)).Times(186);
+	EXPECT_CALL(pMock, Read(_)).WillRepeatedly(Return(pattern));
+
+	EXPECT_TRUE(testShell.testApp2());
 }
