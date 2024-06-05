@@ -3,16 +3,11 @@
 #include <string>
 #include <fstream>
 #include <vector>
+
+#include "ssdexcept.h"
 #include "ssd.cpp"
 
 using namespace std;
-
-struct CommandSet
-{
-	int cmdOpcode;
-	int address;
-	int data;
-};
 
 class ICommand {
 public:
@@ -66,12 +61,12 @@ protected:
 
 		if (argc >= 3 && !isDecimal(string(argv[2])))
 		{
-			return COMMAND_VALIDATION_FAIL;
+			throw ssd_exception(string("[Argument Validation] Address is invalid: ") + argv[2]);
 		}
 
 		if (argc >= 4 && !IsValidData(string(argv[3])))
 		{
-			return COMMAND_VALIDATION_FAIL;
+			throw ssd_exception(string("[Argument Validation] Data is invalid: ") + argv[3]);
 		}
 
 		if (argc == 4 && string(argv[1]) == "W")

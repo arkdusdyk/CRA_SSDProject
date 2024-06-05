@@ -1,8 +1,11 @@
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include "Invoker.cpp"
 #include "Write.cpp"
 #include "Read.cpp"
+
+#define DEBUG (0)
 
 int main(int argc, char* argv[])
 {
@@ -11,6 +14,12 @@ int main(int argc, char* argv[])
 
     invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
     invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
-
-    return invoker.executeCommands(argc, argv);
+    try {
+        return invoker.executeCommands(argc, argv);
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "Exception: " << e.what() << std::endl;
+        return -EPERM;
+    }
 }
