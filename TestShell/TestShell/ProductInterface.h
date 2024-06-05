@@ -30,6 +30,7 @@ public:
 		cmd.append(mExecuteName + " R " + std::to_string(addr));
 		if (system(cmd.c_str()) != 0)
 			cout << "실행파일을 실행하지 못했습니다." << endl;
+
 		ifstream readFile;
 		string result;
 		readFile.open(mReadFileName);

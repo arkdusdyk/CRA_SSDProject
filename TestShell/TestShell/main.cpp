@@ -12,13 +12,16 @@ int main() {
 	CommandParser cp;
 	while (1) {
 		try {
+			cout << "> ";
 			getline(cin, input_cmd);
+			if (input_cmd == "")
+				continue;
 			cp.command_parse(input_cmd);
 			transform(cp.cmd.begin(), cp.cmd.end(), cp.cmd.begin(), ::toupper);
 			if (cp.cmd == "EXIT")
 				break;
 			else if (cp.cmd == "HELP")
-				cout << "도움말 추가 예정\n";
+				ts.Help();";
 			else if (cp.cmd == "READ")
 				ts.Read(cp.lba);
 			else if (cp.cmd == "WRITE")
