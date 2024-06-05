@@ -1,13 +1,25 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
 
 using namespace std;
 
+
+class ssd_exception : public std::exception {
+private:
+	std::string what_message;
+public:
+	ssd_exception(char const* const message) {
+		what_message = message;
+	}
+	const char* what() const override
+	{
+		return what_message.c_str();
+	}
+};
 
 class SSD {
 public:
@@ -18,7 +30,7 @@ public:
 		vector<string> ssdData;
 
 		if (address < 0 || address >= MAX_ADDRESS)
-			throw out_of_range("address range is 0 <= address <= 99");
+			throw ssd_exception("address range is 0 <= address <= 99");
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -34,7 +46,7 @@ public:
 		int data = 0;
 
 		if (address < 0 || address >= MAX_ADDRESS)
-			throw out_of_range("address range is 0 <= address <= 99");
+			throw ssd_exception("address range is 0 <= address <= 99");
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -67,13 +79,15 @@ private:
 
 		if (inFile.is_open()) {
 			string line;
-			int cnt = 0;
-			string readData;
 			while (getline(inFile, line)) {
 				data.push_back(line);
 			}
 		}
 		inFile.close();
+
+		if (data.size() != MAX_ADDRESS) {
+			throw ssd_exception("File Broken");
+		}
 
 		return data;
 	}
