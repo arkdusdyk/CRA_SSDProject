@@ -1,6 +1,9 @@
 #include <iostream>
-#include "ProductInterface.h"
 #include <vector>
+#include <regex>
+
+#include "ProductInterface.h"
+#include "TestShell_Exception.h"
 
 using namespace std;
 
@@ -11,10 +14,13 @@ public:
 	}
 
 	void Write(int arr, string value) {
+		checkInvalid_LBA(arr);
+		checkInvalid_Value(value);
 		product->Write(arr, value);
 	}
 
 	string Read(int arr) {
+		checkInvalid_LBA(arr);
 		string result = product->Read(arr);
 		cout << result << endl;
 		return product->Read(arr);
@@ -70,8 +76,20 @@ public:
 	}
 
 private:
+	const int MIN_LBA = 0;
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
 	IProduct* product;
+
+	void checkInvalid_LBA(int arr) {
+		if (arr < MIN_LBA || arr > MAX_LBA)
+			throw wrongAdrress_exception();
+	}
+
+	void checkInvalid_Value(string value) {
+		std::regex reg("0x[0-9A-F]{8}$");
+		if (!regex_match(value, reg))
+			throw wrongValue_exception();
+	}
 };
