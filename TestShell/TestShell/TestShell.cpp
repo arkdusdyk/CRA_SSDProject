@@ -78,11 +78,26 @@ public:
 		return true;
 	}
 
+	void Help() {
+		for (string help : helpText) {
+			cout << help << endl;
+		}
+	}
+
 private:
 	const int MIN_LBA = 0;
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
+
+	const vector<string> helpText = {
+		"[Read] read [address: 0~99]",
+		"[Write] write [address: 0~99] [vaule: 0x00000000~0xFFFFFFFF]",
+		"[FullRead] fullread [address: 0~99]",
+		"[FullWrite] fullwrite",
+		"[TestApp1] testapp1",
+		"[TestApp2] testapp2"
+	};
 	IProduct* product;
 
 	void checkInvalid_LBA(int arr) {
