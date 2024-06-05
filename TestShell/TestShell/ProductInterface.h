@@ -9,7 +9,7 @@ __interface IProduct
 	virtual string Read(int addr) = 0;
 };
 
-class SSDProtocol : public IProduct
+class SSDProduct : public IProduct
 {
 public:
 	virtual void Write(int addr, string value) override {
@@ -48,7 +48,7 @@ public:
 	void createProduct(string productType) {
 		if (productType == "SSD")
 		{
-			product = new SSDProtocol;
+			product = new SSDProduct;
 		}
 	}
 
