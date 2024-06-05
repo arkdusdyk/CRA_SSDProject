@@ -7,6 +7,7 @@
 using namespace std;
 int main() {
 	string input_cmd;
+	TestShell ts;
 	CommandParser cp;
 	while (1) {
 		try {
@@ -19,8 +20,15 @@ int main() {
 
 		if (cp.cmd == "exit")
 			break;
-		else if (input_cmd == "help")
+		else if (cp.cmd == "help")
 			cout << "도움말 추가 예정\n";
-
+		else if (cp.cmd == "read")
+			ts.Read(cp.lba);
+		else if (cp.cmd == "write")
+			ts.Write(cp.lba, cp.data);
+		else if (cp.cmd == "fullwrite")
+			ts.FulllWrite(cp.data);
+		else if (cp.cmd == "fullread")
+			ts.FullRead();
 	}
 }
