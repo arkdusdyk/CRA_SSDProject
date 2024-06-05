@@ -30,10 +30,15 @@ int main() {
 				ts.FulllWrite(cp.data);
 			else if (cp.cmd == "FULLREAD")
 				ts.FullRead();
-			else if (cp.cmd == "TESTAPP1")
-				ts.testApp1();
-			else if (cp.cmd == "TESTAPP2")
-				ts.testApp2();
+			else if (cp.cmd == "TESTAPP1") {
+				string msg = "testApp1 ";
+				msg.append(ts.testApp1() ? "PASS" : "FAIL");
+				cout << msg << endl;
+			} else if (cp.cmd == "TESTAPP2") {
+				string msg = "testApp2 ";
+				msg.append(ts.testApp2() ? "PASS" : "FAIL");
+				cout << msg << endl;
+			}
 		}
 		catch (exception) {
 			cout << "INVALID COMMAND\n";
