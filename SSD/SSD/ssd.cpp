@@ -29,24 +29,18 @@ public:
 	void write(int address, int data) {
 		vector<string> ssdData;
 
-		if (address < 0 || address >= MAX_ADDRESS)
-			throw ssd_exception("address range is 0 <= address <= 99");
+		checkingValidLba(address);
 
 		checkDataInit();
 		ssdData = getSsdData();
-
-		stringstream dataToHex;
-		dataToHex << std::hex << data;
-		ssdData[address] = dataToHex.str();
+		ssdData[address] = IntToHexString(data);
 		setSsdData(ssdData);
 	}
 
 	int read(int address) {
 		vector<string> ssdData;
-		int data = 0;
 
-		if (address < 0 || address >= MAX_ADDRESS)
-			throw ssd_exception("address range is 0 <= address <= 99");
+		checkingValidLba(address);
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -58,7 +52,19 @@ public:
 private:
 	const string OUTPUT = "result.txt";
 	const string NAND = "nand.txt";
-	const int MAX_ADDRESS = 100;
+	static constexpr int SSD_CAPACITY = 100;
+	static constexpr int MIN_LBA = 0;
+	static constexpr int MAX_LBA = (SSD_CAPACITY -1);
+
+	void checkingValidLba(int address)
+	{
+		if (address < MIN_LBA || address > MAX_LBA)
+		{
+			string errorMessage = "address range is ";
+			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
+			throw ssd_exception(errorMessage.c_str());
+		}
+	}
 
 	void checkDataInit() {
 		ifstream checkFile(NAND);
@@ -69,7 +75,7 @@ private:
 		}
 
 		ofstream firstFile(NAND);
-		for (int i = 0; i < MAX_ADDRESS; i++) {
+		for (int i = MIN_LBA; i <= MAX_LBA; i++) {
 			firstFile << "0" << endl;
 		}
 		firstFile.close();
@@ -90,7 +96,7 @@ private:
 		}
 		inFile.close();
 
-		if (data.size() != MAX_ADDRESS) {
+		if (data.size() != SSD_CAPACITY) {
 			throw ssd_exception("File Broken");
 		}
 
@@ -104,7 +110,7 @@ private:
 			throw ssd_exception("Cannot Open File");
 		}
 
-		for (int i = 0; i < MAX_ADDRESS; i++) {
+		for (int i = MIN_LBA; i <= MAX_LBA; i++) {
 			outFile << data[i] << endl;
 		}
 
@@ -122,4 +128,12 @@ private:
 
 		outFile.close();
 	}
+
+	std::string IntToHexString(int data)
+	{
+		std::stringstream dataToHex;
+		dataToHex << std::hex << data;
+		return dataToHex.str();
+	}
+
 };
