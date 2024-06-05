@@ -82,7 +82,7 @@ private:
 
 		ofstream firstFile(NAND);
 		for (int i = MIN_LBA; i <= MAX_LBA; i++) {
-			firstFile << "0" << endl;
+			firstFile << "0x00000000" << endl;
 		}
 		firstFile.close();
 		checkFile.close();
@@ -139,7 +139,7 @@ private:
 	{
 		std::stringstream dataToHex;
 		dataToHex << std::hex << data;
-		return dataToHex.str();
+		return "0x" + dataToHex.str();
 	}
 
 };
