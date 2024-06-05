@@ -49,7 +49,7 @@ public:
 private:
 	char curPath[256];
 
-	string mReadFileName = "\\..\\..\\SSD\\x64\\Debug\\result.txt";
+	string mReadFileName = "result.txt";
 	string mExecuteName = "\\..\\..\\SSD\\x64\\Debug\\ssd.exe";
 };
 
