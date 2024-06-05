@@ -24,5 +24,8 @@
     <ClCompile Include="ProductInterface.h">
       <Filter>헤더 파일</Filter>
     </ClCompile>
+    <ClCompile Include="TestShell_Execption.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

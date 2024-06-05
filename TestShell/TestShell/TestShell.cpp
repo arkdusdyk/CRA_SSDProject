@@ -1,6 +1,8 @@
 #include <iostream>
-#include "ProductInterface.h"
 #include <vector>
+
+#include "ProductInterface.h"
+#include "TestShell_Exception.h"
 
 using namespace std;
 
@@ -11,10 +13,12 @@ public:
 	}
 
 	void Write(int arr, string value) {
+		checkInvalid_LBA(arr);
 		product->Write(arr, value);
 	}
 
 	string Read(int arr) {
+		checkInvalid_LBA(arr);
 		string result = product->Read(arr);
 		cout << result << endl;
 		return product->Read(arr);
@@ -74,4 +78,9 @@ private:
 	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
 	IProduct* product;
+
+	void checkInvalid_LBA(int arr) {
+		if (arr <0 || arr > MAX_LBA)
+			throw wrongAdrress_exception();
+	}
 };

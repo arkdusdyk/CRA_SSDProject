@@ -53,8 +53,7 @@ TEST_F(TestShellFixture, ReadFailTest) {
 	EXPECT_THROW(pMock.Read(110), exception);
 }
 
-TEST_F(TestShellFixture, writeWrongAddrWrite) {
-	EXPECT_CALL(pMock, Write(_, _)).Times(1);
+TEST_F(TestShellFixture, writeWrongAddr) {
 	EXPECT_THROW(testShell.Write(-1, "0x123456AB"); , exception);
 }
 
