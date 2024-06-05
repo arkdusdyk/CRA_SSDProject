@@ -17,7 +17,7 @@ public:
 	void write(int address, int data) {
 		vector<string> ssdData;
 
-		if (address < 0 || address >= 100)
+		if (address < 0 || address >= MAX_ADDRESS)
 			throw out_of_range("address range is 0 <= address <= 99");
 
 		checkDataInit();
@@ -33,7 +33,7 @@ public:
 		vector<string> ssdData;
 		int data = 0;
 
-		if (address < 0 || address >= 100)
+		if (address < 0 || address >= MAX_ADDRESS)
 			throw out_of_range("address range is 0 <= address <= 99");
 
 		checkDataInit();
@@ -46,13 +46,14 @@ public:
 private:
 	const string OUTPUT = "result.txt";
 	const string NAND = "nand.txt";
+	const int MAX_ADDRESS = 100;
 
 	void checkDataInit() {
 		ifstream checkFile(NAND);
 
 		if (!checkFile.good()) {
 			ofstream firstFile(NAND);
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < MAX_ADDRESS; i++) {
 				firstFile << "0" << endl;
 			}
 			firstFile.close();
@@ -81,7 +82,7 @@ private:
 		ofstream outFile(NAND);
 
 		if (outFile.is_open()) {
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < MAX_ADDRESS; i++) {
 				outFile << data[i] << endl;
 			}
 		}
