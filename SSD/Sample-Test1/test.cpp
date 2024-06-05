@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <memory>
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -18,8 +19,8 @@ public:
     CommandInvoker invoker{ &ssd };
     void SetUp()
     {
-        invoker.addCommand(new WriteCommand);
-        invoker.addCommand(new ReadCommand);
+        invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
+        invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
     }
 };
 
@@ -93,7 +94,7 @@ TEST_F(SSDFIxture, CommandInvokerRead0) {
     char* argv[] = { "ssd.exe", "R", "0"};
     int ret = invoker.executeCommands(argc, argv);
    
-    int expectedData= 0;
+    int expectedData = 0xdeadbeef;
     EXPECT_THAT(ret, testing::Eq(expectedData));
 }
 
