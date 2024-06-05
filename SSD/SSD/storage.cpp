@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 #include <stdexcept>
 #include <vector>
 
@@ -31,6 +32,7 @@ class SSD : public Storage {
 public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
+	static const int CLEAN_PAGE_DATA = 0;
 
 	void write(int address, int data) override {
 		vector<string> ssdData;
@@ -39,7 +41,7 @@ public:
 
 		checkDataInit();
 		ssdData = getSsdData();
-		ssdData[address] = IntToHexString(data);
+		ssdData[address] = IntToHexUppercaseString(data);
 		setSsdData(ssdData);
 	}
 
@@ -82,7 +84,7 @@ private:
 
 		ofstream firstFile(NAND);
 		for (int i = MIN_LBA; i <= MAX_LBA; i++) {
-			firstFile << "0x00000000" << endl;
+			firstFile << IntToHexUppercaseString(CLEAN_PAGE_DATA) << endl;
 		}
 		firstFile.close();
 		checkFile.close();
@@ -135,11 +137,11 @@ private:
 		outFile.close();
 	}
 
-	std::string IntToHexString(int data)
+	std::string IntToHexUppercaseString(int data)
 	{
 		std::stringstream dataToHex;
-		dataToHex << std::hex << data;
-		return "0x" + dataToHex.str();
+		dataToHex << "0x" << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << data;
+		return dataToHex.str();
 	}
 
 };
