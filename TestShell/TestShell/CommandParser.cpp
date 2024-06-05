@@ -44,9 +44,9 @@ public:
 				//cout << "cmd : " << cmd << " lba : " << lba << "\n";
 			}
 			else if (cmd == "fullwrite") {
-				if (isDataValid(tokens[2]) == false)
+				if (isDataValid(tokens[1]) == false)
 					throw exception("Data out of range");
-				data = tokens[2];
+				data = tokens[1];
 				//cout << "cmd : " << cmd << " data : " << lba << "\n";
 			}
 			else
