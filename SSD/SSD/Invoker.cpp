@@ -5,6 +5,7 @@
 class CommandInvoker {
 private:
     std::vector<std::unique_ptr<ICommand>> commands;
+    SSD* ssd = nullptr;
 
 public:
     CommandInvoker(SSD* ssd) : ssd(ssd) {}
@@ -13,17 +14,24 @@ public:
     }
 
     int executeCommands(int argc, char* argv[]) {
+        int ret = commandValidation(argc, argv);
+        if (ret == ICommand::COMMAND_VALIDATION_FAIL)
+            return ret;
+
         for (const auto& command : commands) {
             if (argv[1] == command->getCommandCode())
             {
-                int ret = command->execute(argc, argv, ssd);
-                commands.clear();
+                ret = command->execute(argc, argv, ssd);
                 return ret;
             }
         }
-        commands.clear();
         return 0;
     }
 private:
-    SSD* ssd = nullptr;
+    int commandValidation(int argc, char* argv[])
+    {
+        if (argc < 3 || argc > 5)
+            return ICommand::COMMAND_VALIDATION_FAIL;
+        return ICommand::COMMAND_VALIDATION_SUCCESS;
+    }
 };

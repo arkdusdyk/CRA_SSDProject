@@ -97,7 +97,7 @@ TEST_F(SSDFIxture, CommandInvokerRead0) {
     char* argv[] = { "ssd.exe", "R", "0"};
     int ret = invoker.executeCommands(argc, argv);
    
-    int expectedData = 0xdeadbeef;
+    int expectedData = 0;
     EXPECT_THAT(ret, testing::Eq(expectedData));
 }
 
@@ -117,4 +117,30 @@ TEST_F(SSDFIxture, CommandInvokerRead100) {
     EXPECT_THROW({
          invoker.executeCommands(argc, argv);
         }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerWriteRead0Verify) {
+    int argc = 4;
+    char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef" };
+    invoker.executeCommands(4, argv);
+    argc = 3;
+    argv[1] = "R";
+    argv[3] = "";
+    int ret = invoker.executeCommands(argc, argv);
+
+    int expectedData = 0xdeadbeef;
+    EXPECT_THAT(ret, testing::Eq(expectedData));
+}
+
+TEST_F(SSDFIxture, CommandInvokerWriteRead50Verify) {
+    int argc = 4;
+    char* argv[] = { "ssd.exe", "W", "50", "0xdeadbeef" };
+    invoker.executeCommands(4, argv);
+    argc = 3;
+    argv[1] = "R";
+    argv[3] = "";
+    int ret = invoker.executeCommands(argc, argv);
+
+    int expectedData = 0xdeadbeef;
+    EXPECT_THAT(ret, testing::Eq(expectedData));
 }
