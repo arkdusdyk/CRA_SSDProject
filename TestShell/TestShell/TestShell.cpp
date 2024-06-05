@@ -48,6 +48,7 @@ public:
 	}
 
 	void Write(int arr, string value) {
+		iprotocol->Write(arr, value); 
 	}
 
 	string Read(int arr) {
@@ -55,7 +56,9 @@ public:
 	}
 
 	void FulllWrite( string value) {
-
+		for (int lba = 0; lba < 100; lba++) {
+			iprotocol->Write(lba, value);
+		}
 	}
 
 	vector<string> FullRead() {
