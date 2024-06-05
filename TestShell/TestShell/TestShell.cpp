@@ -43,8 +43,11 @@ private:
 
 class TestShell {
 public:
-	void Write(int arr, string value) {
+	void setProtocol(IProtocol *iprotocol) {
+		iprotocol = iprotocol;
+	}
 
+	void Write(int arr, string value) {
 	}
 
 	string Read(int arr) {
@@ -58,4 +61,6 @@ public:
 	vector<string> FullRead() {
 		return { "" };
 	}
+private:
+	IProtocol* iprotocol;
 };

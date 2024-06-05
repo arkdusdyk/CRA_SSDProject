@@ -48,7 +48,8 @@ TEST_F(TestShellFixture, ReadFailTest) {
 	EXPECT_THROW(pMock.Read(110), exception);
 }
 
-TEST_F(TestShellFixture, writeWrongAddrWrite) {	
+TEST_F(TestShellFixture, writeWrongAddrWrite) {
+	testShell.setProtocol(&pMock);
 	EXPECT_THROW(testShell.Write(-1, "0x123456AB"); , exception);
 }
 
@@ -57,7 +58,7 @@ TEST_F(TestShellFixture, writeA) {
 	string expected = "0x123456AB";
 
 	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
-	
+	testShell.setProtocol(&pMock);
 	testShell.Write(address, "0x123456AB");
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
@@ -70,7 +71,7 @@ TEST_F(TestShellFixture, writeAwriteB) {
 	EXPECT_CALL(pMock, Read(address)).WillRepeatedly(Return(expected));
 
 	EXPECT_CALL(pMock, Write(address, _)).Times(2);
-
+	testShell.setProtocol(&pMock);
 	testShell.Write(address, firstInput);
 	testShell.Write(address, expected);
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
