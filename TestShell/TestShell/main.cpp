@@ -17,7 +17,7 @@ int main() {
 			if (cp.cmd == "exit")
 				break;
 			else if (cp.cmd == "help")
-				cout << "도움말 추가 예정\n";
+				ts.Help();
 			else if (cp.cmd == "read")
 				ts.Read(cp.lba);
 			else if (cp.cmd == "write")
