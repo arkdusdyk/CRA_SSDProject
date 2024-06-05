@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <iostream>
+#include <ostream>
 
 #include "../TestShell/TestShell.cpp"
 #include "gtest/gtest.h"
@@ -16,6 +18,7 @@ public:
 class TestShellFixture : public Test {
 public:
 	ProductMock pMock;
+  SSDProtocol protocol;
 	TestShell testShell;
 	const int MAX_CELL_COUNT = 100;
 
@@ -73,6 +76,7 @@ TEST_F(TestShellFixture, writeAwriteB) {
 	EXPECT_THAT(testShell.Read(address), Eq(expected));
 }
 
+
 TEST_F(TestShellFixture, writeInvalidValue) {
 	int address = 1;
 	string invalidInput = "0x1234GGGG";
@@ -105,4 +109,14 @@ TEST_F(TestShellFixture, fullRead) {
 		.WillRepeatedly(Return("0x00000000"));
 	
 	EXPECT_TRUE(CheckFullRead_VectorExpect(expecteds));
+
+TEST_F(TestShellFixture, SSDProtocolRead) {
+	ofstream file;
+	string expected = "0x11223344";
+	string actual;
+	file.open("result.txt");
+	file << "0x11223344" << endl;
+	file.close();
+	actual = protocol.Read(1);
+	EXPECT_EQ(actual, expected);
 }
