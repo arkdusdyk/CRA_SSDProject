@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -26,6 +27,7 @@ public:
 	void Write(int arr, string value) {
 
 	}
+
 	string Read(int arr) {
 		return "";
 	}
@@ -34,7 +36,7 @@ public:
 
 	}
 
-	string FullRead(string value) {
-
+	vector<string> FullRead() {
+		return { "" };
 	}
 };
