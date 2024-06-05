@@ -64,6 +64,22 @@ public:
 	vector<string> FullRead() {
 		return { "" };
 	}
+
+	void testApp2() {
+		for (int cnt = 0; cnt < 30; cnt++) {
+			for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
+				iprotocol->Write(lbaAddress, "0xAAAABBBB");
+			}
+		}
+
+		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
+			iprotocol->Write(lbaAddress, "0x12345678");
+		}
+
+		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
+			cout << iprotocol->Read(lbaAddress) << "\n";
+		}
+	}
 private:
 	IProtocol* iprotocol;
 };
