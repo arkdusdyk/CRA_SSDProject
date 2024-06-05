@@ -3,11 +3,20 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "../SSD/ssd.cpp"
+#include "../SSD/ICommand.h"
+#include "../SSD/Invoker.cpp"
+#include "../SSD/Write.cpp"
+#include "../SSD/Read.cpp"
 
 class SSDFIxture : public testing::Test {
 public:
     SSD ssd;
+    CommandInvoker invoker{ &ssd };
+    void SetUp()
+    {
+        invoker.addCommand(new WriteCommand);
+        invoker.addCommand(new ReadCommand);
+    }
 };
 
 TEST_F(SSDFIxture, SsdWrite0) {
@@ -52,55 +61,37 @@ TEST_F(SSDFIxture, SsdRead100) {
         }, std::out_of_range);
 }
 
-TEST_F(SSDFIxture, SsdCommandCheckParamWrite0) {
+TEST_F(SSDFIxture, CommandInvokerWrite0) {
     int argc = 4;
     char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef"};
-    CommandSet cmd;
-    int result = ssd.checkParameter(argc, argv, cmd);
+    int ret = invoker.executeCommands(argc, argv);
 
-    int expectedAddress = 0;
-    int expectedData = 0xdeadbeef;
-    EXPECT_THAT(cmd.cmdOpcode, testing::Eq(SSD::COMMAND_WRITE));
-    EXPECT_THAT(cmd.address, testing::Eq(expectedAddress));
-    EXPECT_THAT(cmd.data, testing::Eq(0xdeadbeef));
-    EXPECT_THAT(result, testing::Eq(SSD::COMMAND_VALIDATION_SUCCESS));
+    EXPECT_THAT(ret, testing::Eq(ICommand::COMMAND_VALIDATION_SUCCESS));
 }
 
-TEST_F(SSDFIxture, SsdCommandCheckParamRead0) {
+TEST_F(SSDFIxture, CommandInvokerRead0) {
     int argc = 3;
     char* argv[] = { "ssd.exe", "R", "0"};
-    CommandSet cmd;
-    int result = ssd.checkParameter(argc, argv, cmd);
-
-    int expectedAddress = 0;
-    EXPECT_THAT(cmd.cmdOpcode, testing::Eq(SSD::COMMAND_READ));
-    EXPECT_THAT(cmd.address, testing::Eq(expectedAddress));
-    EXPECT_THAT(result, testing::Eq(SSD::COMMAND_VALIDATION_SUCCESS));
+    int ret = invoker.executeCommands(argc, argv);
+   
+    int expectedData= 0;
+    EXPECT_THAT(ret, testing::Eq(expectedData));
 }
 
-
-TEST_F(SSDFIxture, SsdCommandCheckParamWrite100) {
+TEST_F(SSDFIxture, CommandInvokerWrite100) {
     int argc = 4;
     char* argv[] = { "ssd.exe", "W", "100", "0xdeadbeef" };
-    CommandSet cmd;
-    int result = ssd.checkParameter(argc, argv, cmd);
 
-    int expectedAddress = 100;
-    int expectedData = 0xdeadbeef;
-    EXPECT_THAT(cmd.cmdOpcode, testing::Eq(SSD::COMMAND_WRITE));
-    EXPECT_THAT(cmd.address, testing::Eq(expectedAddress));
-    EXPECT_THAT(cmd.data, testing::Eq(0xdeadbeef));
-    EXPECT_THAT(result, testing::Eq(SSD::COMMAND_VALIDATION_SUCCESS));
+    EXPECT_THROW({
+         invoker.executeCommands(argc, argv);
+        }, std::out_of_range);
 }
 
-TEST_F(SSDFIxture, SsdCommandCheckParamRead100) {
+TEST_F(SSDFIxture, CommandInvokerRead100) {
     int argc = 3;
-    char* argv[] = { "ssd.exe", "R", "100" };
-    CommandSet cmd;
-    int result = ssd.checkParameter(argc, argv, cmd);
+    char* argv[] = { "ssd.exe", "R", "100"};
 
-    int expectedAddress = 100;
-    EXPECT_THAT(cmd.cmdOpcode, testing::Eq(SSD::COMMAND_READ));
-    EXPECT_THAT(cmd.address, testing::Eq(expectedAddress));
-    EXPECT_THAT(result, testing::Eq(SSD::COMMAND_VALIDATION_SUCCESS));
+    EXPECT_THROW({
+         invoker.executeCommands(argc, argv);
+        }, std::out_of_range);
 }
