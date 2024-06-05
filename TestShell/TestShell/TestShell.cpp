@@ -29,7 +29,7 @@ public:
 	vector<string> FullRead() {
 		vector<string> results;
 		for (int lba = 0; lba < MAX_LBA; lba++) {
-			results.push_back(iprotocol->Read(lba));
+			results.push_back(product->Read(lba));
 			cout << results[lba] << endl;
 		}
 		return results;
@@ -50,16 +50,16 @@ public:
 	void testApp2() {
 		for (int cnt = 0; cnt < 30; cnt++) {
 			for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
-				iprotocol->Write(lbaAddress, "0xAAAABBBB");
+				product->Write(lbaAddress, "0xAAAABBBB");
 			}
 		}
 
 		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
-			iprotocol->Write(lbaAddress, "0x12345678");
+			product->Write(lbaAddress, "0x12345678");
 		}
 
 		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
-			cout << iprotocol->Read(lbaAddress) << "\n";
+			cout << product->Read(lbaAddress) << "\n";
 		}
 	}
 
