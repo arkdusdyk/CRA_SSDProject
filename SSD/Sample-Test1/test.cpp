@@ -15,8 +15,10 @@ public:
     const string OUTPUT = "result.txt";
     const string NAND = "nand.txt";
 
-    SSD ssd;
-    CommandInvoker invoker{ &ssd };
+    Device* device = new StorageDevice();
+    Storage* ssd = device->setDevice(TYPE_SSD);
+    CommandInvoker invoker{ ssd };
+
     void SetUp() override {
         invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
         invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
@@ -33,34 +35,34 @@ public:
 TEST_F(SSDFIxture, SsdWrite0) {
     int address = 0;
     int data = 0xdeadbeef;
-    ssd.write(address, data);
+    ssd->write(address, data);
 }
 
 TEST_F(SSDFIxture, SsdWrite99) {
     int address = 0;
     int data = 0xdeadbeef;
-    ssd.write(address, data);
+    ssd->write(address, data);
 }
 
 TEST_F(SSDFIxture, SsdWrite100) {
     int address = 100;
     int data = 0xdeadbeef;
     EXPECT_THROW({
-         ssd.write(address, data);
+         ssd->write(address, data);
         }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, SsdRead0) {
     int address = 0;
     int expected = 0x00000000;
-    int result = ssd.read(address);
+    int result = ssd->read(address);
     EXPECT_THAT(expected, testing::Eq(expected));
 }
 
 TEST_F(SSDFIxture, SsdRead99) {
     int address = 99;
     int expected = 0x00000000;
-    int result = ssd.read(address);
+    int result = ssd->read(address);
     EXPECT_THAT(expected, testing::Eq(expected));
 }
 
@@ -68,7 +70,7 @@ TEST_F(SSDFIxture, SsdRead100) {
     int address = 100;
     int expected = 0x00000000;
     EXPECT_THROW({
-         ssd.read(address);
+         ssd->read(address);
         }, ssd_exception);
 }
 
@@ -80,7 +82,34 @@ TEST_F(SSDFIxture, SsdBrokenFile) {
     testFile.close();
 
     EXPECT_THROW({
-         ssd.read(0);
+         ssd->read(0);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerEmptyCommand) {
+    int argc = 1;
+    char* argv[] = { "ssd.exe" };
+
+    EXPECT_THROW({
+        invoker.executeCommands(argc, argv);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerEmptyArgument) {
+    int argc = 1;
+    char* argv[] = { "ssd.exe", "W"};
+
+    EXPECT_THROW({
+        invoker.executeCommands(argc, argv);
+        }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerLessArgument) {
+    int argc = 1;
+    char* argv[] = { "ssd.exe", "W", "0"};
+
+    EXPECT_THROW({
+        invoker.executeCommands(argc, argv);
         }, ssd_exception);
 }
 
