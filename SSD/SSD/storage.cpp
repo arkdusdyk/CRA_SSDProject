@@ -16,12 +16,23 @@ struct CommandSet
 	int data;
 };
 
-class SSD {
+#define interface struct
+
+const enum DeviceType {
+	TYPE_SSD,
+};
+
+interface Storage {
+	virtual void write(int address, int data) = 0;
+	virtual int read(int address) = 0;
+};
+
+class SSD : public Storage {
 public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
 
-	void write(int address, int data) {
+	void write(int address, int data) override {
 		vector<string> ssdData;
 
 		checkingValidLba(address);
@@ -32,7 +43,7 @@ public:
 		setSsdData(ssdData);
 	}
 
-	int read(int address) {
+	int read(int address) override {
 		vector<string> ssdData;
 
 		checkingValidLba(address);
@@ -131,4 +142,21 @@ private:
 		return dataToHex.str();
 	}
 
+};
+
+interface Device {
+	virtual Storage* setDevice(enum DeviceType) = 0;
+};
+
+class StorageDevice : public Device {
+public:
+	Storage* setDevice(enum DeviceType type) {
+		if (type == TYPE_SSD) {
+			return new SSD();
+		}
+		return nullptr;
+	}
+
+private:
+	Storage* storage;
 };

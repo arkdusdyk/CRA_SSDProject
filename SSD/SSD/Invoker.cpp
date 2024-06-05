@@ -7,10 +7,10 @@
 class CommandInvoker {
 private:
     std::vector<std::unique_ptr<ICommand>> commands;
-    SSD* ssd = nullptr;
+    Storage* storage = nullptr;
 
 public:
-    CommandInvoker(SSD* ssd) : ssd(ssd) {}
+    CommandInvoker(Storage* storage) : storage(storage) {}
     void addCommand(unique_ptr<ICommand> command) {
         commands.push_back(std::move(command));
     }
@@ -22,7 +22,7 @@ public:
         for (const auto& command : commands) {
             if (argc >= 2 && argv[1] == command->getCommandCode())
             {
-                return command->execute(argc, argv, ssd);
+                return command->execute(argc, argv, storage);
             }
         }
         throw ssd_exception(string("[Argument Validation] Invalid Command Code: ") + argv[1]);
