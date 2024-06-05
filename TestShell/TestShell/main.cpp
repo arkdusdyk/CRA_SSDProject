@@ -21,7 +21,7 @@ int main() {
 			if (cp.cmd == "EXIT")
 				break;
 			else if (cp.cmd == "HELP")
-				ts.Help();";
+				ts.Help();
 			else if (cp.cmd == "READ")
 				ts.Read(cp.lba);
 			else if (cp.cmd == "WRITE")
