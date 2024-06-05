@@ -97,7 +97,7 @@ public:
 		if (check_data[0] == '0' && check_data[1] == 'x') {
 			bool flag = true;
 			for (int i = 2; i < 10; i++) {
-				if (('A' <= check_data[i] <= 'F') || ('0' <= check_data[i] <= '9'))	continue;
+				if ((('A' <= check_data[i]) && (check_data[i] <= 'F')) || (('0' <= check_data[i]) && (check_data[i] <= '9')))	continue;
 				else {
 					flag = false;
 					break;
