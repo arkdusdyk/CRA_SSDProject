@@ -61,6 +61,24 @@ public:
 	vector<string> FullRead() {
 		return { "" };
 	}
+
+	void testApp2() {
+		SSDProtocol ssdProtocol;
+
+		for (int cnt = 0; cnt < 30; cnt++) {
+			for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
+				ssdProtocol.Write(lbaAddress, "0xAAAABBBB");
+			}
+		}
+
+		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
+			ssdProtocol.Write(lbaAddress, "0x12345678");
+		}
+
+		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
+			cout << ssdProtocol.Read(lbaAddress) << "\n";
+		}
+	}
 private:
 	IProtocol* iprotocol;
 };
