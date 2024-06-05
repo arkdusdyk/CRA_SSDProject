@@ -36,7 +36,8 @@ public:
 	}
 private:
 	string mReadFileName = "result.txt";
-	string mExecuteName = "ssd.exe";
+	string mExecuteName = "../../../SSD/x64/Debug/ssd.exe";
+
 };
 
 class createProductFactory {

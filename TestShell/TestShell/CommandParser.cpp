@@ -27,7 +27,7 @@ public:
 
 		if (tokens.size() == 1) {			//	exit, help, fullread
 			cmd = tokens[0];
-			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread")) {
+			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2")) {
 				//cout << "cmd : " << cmd << "\n";
 			}
 			else

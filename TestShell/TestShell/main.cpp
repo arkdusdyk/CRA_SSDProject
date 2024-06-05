@@ -8,6 +8,7 @@ using namespace std;
 int main() {
 	string input_cmd;
 	TestShell ts;
+	ts.createProduct("SSD");
 	CommandParser cp;
 	while (1) {
 		try {
@@ -25,6 +26,10 @@ int main() {
 				ts.FulllWrite(cp.data);
 			else if (cp.cmd == "fullread")
 				ts.FullRead();
+			else if (cp.cmd == "testapp1")
+				ts.testApp1();
+			else if (cp.cmd == "testapp2")
+				ts.testApp2();
 		}
 		catch (exception) {
 			cout << "INVALID COMMAND\n";

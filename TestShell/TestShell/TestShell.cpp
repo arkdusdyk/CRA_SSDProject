@@ -12,7 +12,10 @@ public:
 	void setProduct(IProduct* iproduct) {
 		product = iproduct;
 	}
-
+	void createProduct(string device) {
+		createProductFactory cPF(device);
+		setProduct(cPF.getProduct());
+	}
 	void Write(int arr, string value) {
 		checkInvalid_LBA(arr);
 		checkInvalid_Value(value);
