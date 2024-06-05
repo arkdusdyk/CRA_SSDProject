@@ -89,7 +89,7 @@ TEST_F(TestShellFixture, fullWrite) {
 	int address = 1;
 	string expected = "0xABCDEFGH";
 	EXPECT_CALL(pMock, Read(address)).Times(100).WillRepeatedly(Return(expected));
-
+	testShell.setProtocol(&pMock);
 	testShell.FulllWrite(expected);
 	EXPECT_TRUE(CheckFullRead_OneExpect(expected));
 }
@@ -109,6 +109,8 @@ TEST_F(TestShellFixture, fullRead) {
 		.WillOnce(Return("0x12345ABC"))
 		.WillRepeatedly(Return("0x00000000"));
 
+	testShell.setProtocol(&pMock);
+
 	EXPECT_TRUE(CheckFullRead_VectorExpect(expecteds));
 }
 
@@ -121,4 +123,13 @@ TEST_F(TestShellFixture, SSDProtocolRead) {
 	file.close();
 	actual = protocol.Read(1);
 	EXPECT_EQ(actual, expected);
+}
+
+TEST_F(TestShellFixture, testApp1) {
+	string pattern = "0xAABBCCDD";
+	int address = 1;
+	testShell.setProtocol(&pMock);
+	EXPECT_CALL(pMock, Read(_)).WillRepeatedly(Return(pattern));
+	bool expected = true;
+	EXPECT_TRUE(testShell.testApp1());
 }

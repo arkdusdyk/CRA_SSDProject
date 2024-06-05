@@ -44,7 +44,7 @@ private:
 class TestShell {
 public:
 	void setProtocol(IProtocol *iprotocol) {
-		iprotocol = iprotocol;
+		this->iprotocol = iprotocol;
 	}
 
 	void Write(int arr, string value) {
@@ -52,7 +52,9 @@ public:
 	}
 
 	string Read(int arr) {
-		return "";
+		string result = iprotocol->Read(arr);
+		cout << result << endl;
+		return iprotocol->Read(arr);
 	}
 
 	void FulllWrite( string value) {
@@ -62,7 +64,24 @@ public:
 	}
 
 	vector<string> FullRead() {
-		return { "" };
+		vector<string> results;
+		for (int lba = 0; lba < MAX_LBA; lba++) {
+			results.push_back(iprotocol->Read(lba));
+			cout << results[lba] << endl;
+		}
+		return results;
+	}
+
+	bool testApp1() {
+		bool ret = false;
+		FulllWrite(TEST_PATTERN);
+		vector<string> readResult = FullRead();
+		if (readResult.size() != MAX_LBA) return false;
+
+		for (int lba = 0; lba < MAX_LBA; lba++) {
+			if (readResult[lba] != TEST_PATTERN) return false;
+		}
+		return true;
 	}
 
 	void testApp2() {
@@ -80,6 +99,9 @@ public:
 			cout << iprotocol->Read(lbaAddress) << "\n";
 		}
 	}
+
 private:
+	const int MAX_LBA = 100;
+	const string TEST_PATTERN = ("0xAABBCCDD");
 	IProtocol* iprotocol;
 };
