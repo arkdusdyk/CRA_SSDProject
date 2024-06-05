@@ -13,6 +13,7 @@ public:
 	void command_parse(string cmd_line) {
 		if (cmd_line == "")
 			throw exception("No Command");
+
 		vector<string> tokens;
 		tokens.clear();
 		int prev = 0;
@@ -24,16 +25,15 @@ public:
 			cur = cmd_line.find(' ', prev);
 		}
 		tokens.push_back(cmd_line.substr(prev, cur - prev));
-
-		if (tokens.size() == 1) {			//	exit, help, fullread
+		int token_n = tokens.size();
+		if (token_n == 1) {
 			cmd = tokens[0];
 			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2")) {
-				//cout << "cmd : " << cmd << "\n";
 			}
 			else
 				throw exception("INVALID COMMAND");
 		}
-		else if (tokens.size() == 2) {		// read LBA, fullwrite data
+		else if (token_n == 2) {
 			cmd = tokens[0];
 			if (cmd == "read") {
 				if (isLBAint(tokens[1]) == false)
@@ -41,18 +41,16 @@ public:
 				if (isLBAinRange(tokens[1]) == false)
 					throw exception("LBA out of range");
 				lba = stoi(tokens[1]);
-				//cout << "cmd : " << cmd << " lba : " << lba << "\n";
 			}
 			else if (cmd == "fullwrite") {
 				if (isDataValid(tokens[1]) == false)
 					throw exception("Data out of range");
 				data = tokens[1];
-				//cout << "cmd : " << cmd << " data : " << lba << "\n";
 			}
 			else
 				throw exception("INVALID COMMAND");
 		}
-		else if (tokens.size() == 3) {		// write LBA data
+		else if (token_n == 3) {
 			cmd = tokens[0];
 			if (cmd == "write") {
 				if (isLBAint(tokens[1]) == false)
@@ -60,15 +58,15 @@ public:
 				if (isLBAinRange(tokens[1]) == false)
 					throw exception("LBA out of range");
 				lba = stoi(tokens[1]);
+
 				if (isDataValid(tokens[2]) == false)
 					throw exception("Data out of range");
 				data = tokens[2];
-				//cout << "cmd : " << cmd << " lba : " << lba << " data : " << data << "\n";
 			}
 			else
 				throw exception("INVALID COMMAND");
 		}
-		else if(tokens.size() > 3)
+		else if(token_n > 3)
 			throw exception("INVALID COMMAND");
 	}
 
