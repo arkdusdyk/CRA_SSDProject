@@ -78,11 +78,27 @@ public:
 		return true;
 	}
 
+	void Help() {
+		for (string help : helpText) {
+			cout << help << endl;
+		}
+	}
+
 private:
 	const int MIN_LBA = 0;
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
+
+	const vector<string> helpText = {
+		"주요 명령어",
+		"1. write (예) write LBA data : LBA 에 data를 기록",
+		"2. read (예) read LBA : LBA 를 읽음)",
+		"3. exit (예) exit : shell 을 종료)",
+		"4. help (예) help : 주요 명령어의 사용방법 출력)",
+		"5. fullwrite (예) fullwrite data : 모든 LBA(0~99)까지 data 를 write 수행)",
+		"6. fullread (예) fullread : 모든 LBA(0~99) 까지 read 수행)"
+	};
 	IProduct* product;
 
 	void checkInvalid_LBA(int arr) {

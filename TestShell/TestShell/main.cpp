@@ -12,25 +12,29 @@ int main() {
 	CommandParser cp;
 	while (1) {
 		try {
+			cout << "> ";
 			getline(cin, input_cmd);
+			if (input_cmd == "")
+				continue;
 			cp.command_parse(input_cmd);
-			if (cp.cmd == "exit")
+			transform(cp.cmd.begin(), cp.cmd.end(), cp.cmd.begin(), ::toupper);
+			if (cp.cmd == "EXIT")
 				break;
-			else if (cp.cmd == "help")
-				cout << "도움말 추가 예정\n";
-			else if (cp.cmd == "read")
+			else if (cp.cmd == "HELP")
+				ts.Help();
+			else if (cp.cmd == "READ")
 				ts.Read(cp.lba);
-			else if (cp.cmd == "write")
+			else if (cp.cmd == "WRITE")
 				ts.Write(cp.lba, cp.data);
-			else if (cp.cmd == "fullwrite")
+			else if (cp.cmd == "FULLWRITE")
 				ts.FulllWrite(cp.data);
-			else if (cp.cmd == "fullread")
+			else if (cp.cmd == "FULLREAD")
 				ts.FullRead();
-			else if (cp.cmd == "testapp1") {
+			else if (cp.cmd == "TESTAPP1") {
 				string msg = "testApp1 ";
 				msg.append(ts.testApp1() ? "PASS" : "FAIL");
 				cout << msg << endl;
-			} else if (cp.cmd == "testapp2") {
+			} else if (cp.cmd == "TESTAPP2") {
 				string msg = "testApp2 ";
 				msg.append(ts.testApp2() ? "PASS" : "FAIL");
 				cout << msg << endl;

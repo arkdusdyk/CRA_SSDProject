@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <regex>
 
 #include "ssdexcept.h"
 #include "storage.cpp"
@@ -23,13 +24,9 @@ protected:
 		if (value.size() != 10)
 			return false;
 
-		if (value.substr(0, 2) != "0x")
+		std::regex reg("0x[0-9a-fA-F]{8}$");
+		if (!regex_match(value, reg))
 			return false;
-
-		if (!isHexadecimal(value.substr(2)))
-		{
-			return false;
-		}
 
 		return true;
 	}
@@ -39,18 +36,6 @@ protected:
 
 		for (char c : str) {
 			if (!(std::isdigit(c))) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool isHexadecimal(const std::string& str) {
-		if (str.empty()) return false;
-
-		for (char c : str) {
-			if (!(std::isdigit(c) || (std::isalpha(c) && std::toupper(c) >= 'A' && std::toupper(c) <= 'F'))) {
 				return false;
 			}
 		}
