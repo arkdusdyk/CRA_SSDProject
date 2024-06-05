@@ -26,7 +26,7 @@ public:
 		checkInvalid_LBA(arr);
 		string result = product->Read(arr);
 		cout << result << endl;
-		return product->Read(arr);
+		return result;
 	}
 
 	void FulllWrite( string value) {
