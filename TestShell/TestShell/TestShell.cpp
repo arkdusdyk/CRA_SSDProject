@@ -37,17 +37,17 @@ public:
 
 	bool testApp1() {
 		bool ret = false;
-		FulllWrite(TEST_PATTERN);
+		FulllWrite(TEST_PATTERN_TESTAPP1);
 		vector<string> readResult = FullRead();
 		if (readResult.size() != MAX_LBA) return false;
 
 		for (int lba = 0; lba < MAX_LBA; lba++) {
-			if (readResult[lba] != TEST_PATTERN) return false;
+			if (readResult[lba] != TEST_PATTERN_TESTAPP1) return false;
 		}
 		return true;
 	}
 
-	void testApp2() {
+	bool testApp2() {
 		for (int cnt = 0; cnt < 30; cnt++) {
 			for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
 				product->Write(lbaAddress, "0xAAAABBBB");
@@ -59,12 +59,19 @@ public:
 		}
 
 		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
-			cout << product->Read(lbaAddress) << "\n";
+			string readValue = product->Read(lbaAddress);
+
+			if (readValue != TEST_PATTERN_TESPAPP2) return false;
+
+			cout << readValue << "\n";
 		}
+
+		return true;
 	}
 
 private:
 	const int MAX_LBA = 100;
-	const string TEST_PATTERN = ("0xAABBCCDD");
+	const string TEST_PATTERN_TESTAPP1 = ("0xAABBCCDD");
+	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
 	IProduct* product;
 };
