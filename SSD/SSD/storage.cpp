@@ -74,7 +74,8 @@ public:
 				cmdErase(cmd);
 				break;
 			default:
-				cout << "Error" << endl;
+				throw ssd_exception("Unknown Command");
+				break;
 			}
 		}
 		DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
