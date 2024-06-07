@@ -20,8 +20,6 @@ struct CommandSet
 	int size;
 };
 
-#define interface struct
-
 const enum DeviceType {
 	TYPE_SSD,
 };
