@@ -6,11 +6,14 @@
 #include <iomanip>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
+#include <memory>
 #include <windows.h>
 
 #include "ssdexcept.h"
 
 using namespace std;
+using Range = std::pair<int, int>;
 
 struct CommandSet
 {
@@ -51,7 +54,7 @@ public:
 	}
 
 	void erase(int address, int size) override {
-		CommandSet cmd = { COMMAND_WRITE, address, 0, size };
+		CommandSet cmd = { COMMAND_ERASE, address, 0, size };
 
 		setCommandList(cmd);
 	}
@@ -168,6 +171,126 @@ private:
 		return dataToHex.str();
 	}
 
+	bool mergeErase(vector<CommandSet> &commands) {
+		vector<Range> ranges;
+
+		bool isMerged = false;
+
+		for (const auto& cmd : commands)
+		{
+			if (cmd.cmdOpcode == COMMAND_ERASE)
+			{
+				ranges.push_back({ cmd.address, cmd.address + cmd.size - 1 });
+			}
+		}
+		if (ranges.size() <= 1)
+			return isMerged;
+
+		vector<Range> result;
+		sort(ranges.begin(), ranges.end());
+
+		result.push_back(ranges[0]);
+		for (size_t i = 1; i < ranges.size(); ++i) {
+			if (result.back().second >= ranges[i].first - 1) {
+				result.back().second = max(result.back().second, ranges[i].second);
+			}
+			else {
+				result.push_back(ranges[i]);
+			}
+		}
+		for (auto cmd = commands.begin(); cmd != commands.end();)
+		{
+			bool erasedRange = false;
+			bool erasedCmd = false;
+			if (cmd->cmdOpcode == COMMAND_ERASE)
+			{
+				for (std::vector<Range>::iterator range = result.begin(); range != result.end(); )
+				{
+					if (cmd->address == range->first)
+					{
+						cmd->size = range->second - range->first + 1;
+						range = result.erase(range);
+						erasedRange = true;
+					}
+					else
+					{
+						++range;
+						
+					}
+				}
+				if (erasedRange == false)
+				{
+					cmd = commands.erase(cmd);
+					erasedCmd = true;
+					isMerged = true;
+				}
+			}
+
+			if (erasedCmd == false)
+				++cmd;
+
+		}
+
+		return isMerged;
+	}
+
+	bool mergeWriteAndThenErase(vector<CommandSet>& commands) {
+
+		vector<Range> ranges;
+
+		bool isMerged = false;
+
+		for (const auto& cmd : commands)
+		{
+			if (cmd.cmdOpcode == COMMAND_WRITE || cmd.cmdOpcode == COMMAND_ERASE)
+			{
+				ranges.push_back({ cmd.address, cmd.address + cmd.size - 1 });
+			}
+		}
+
+		if (ranges.size() <= 1)
+			return isMerged;
+
+		for (vector<CommandSet>::iterator cmd = std::prev(commands.end()); cmd > commands.begin();)
+		{
+			bool IsErasedWrite = false;
+			if (cmd->cmdOpcode == COMMAND_ERASE)
+			{
+				int beginAddress = cmd->address;
+				int endAddress = cmd->address + cmd->size - 1;
+				for (vector<CommandSet>::iterator cmdUnder = std::prev(cmd); cmdUnder >= commands.begin();)
+				{
+					if (cmdUnder->cmdOpcode == COMMAND_WRITE)
+					{
+						if (beginAddress <= cmdUnder->address && cmdUnder->address <= endAddress)
+						{
+							cmdUnder = commands.erase(cmdUnder);
+							IsErasedWrite = true;
+							continue;
+						}
+					}
+					
+					if (cmdUnder == commands.begin())
+						break;
+					--cmdUnder;
+				}
+			}
+	
+			if (IsErasedWrite == false)
+			{ 
+				--cmd;
+			}
+			else
+			{
+				/*
+				After an iterator becomes invalidated, restart the loop operation from the beginning to obtain valid iterators.
+				While this approach ensures safe access, it may impact performance.
+				*/
+				cmd = std::prev(commands.end());
+			}
+		}
+	}
+
 	void writeCommand(vector<CommandSet> cmdlist) {
 		ofstream cmdFile(CMDFILE);
 		if (!cmdFile.is_open()) {
@@ -229,6 +352,13 @@ private:
 
 		cmdlist = getCommandList();
 		cmdlist.push_back(cmd);
+
+		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
+		{
+			mergeWriteAndThenErase(cmdlist);
+			mergeErase(cmdlist);
+		}
+
 		writeCommand(cmdlist);
 		if (cmdlist.size() >= 10) {
 			flush();
