@@ -54,7 +54,7 @@ public:
 	}
 
 	void erase(int address, int size) override {
-		CommandSet cmd = { COMMAND_WRITE, address, 0, size };
+		CommandSet cmd = { COMMAND_ERASE, address, 0, size };
 
 		setCommandList(cmd);
 	}
