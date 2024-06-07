@@ -8,21 +8,19 @@
 #include <string>
 using namespace std;
 
-namespace loggerDLL {
-	class LoggerDLL_API Logger
-	{
-	public:
-		static Logger& GetInstance() {
-			static Logger instance;
-			return instance;
-		}
-		void write_Log(string log);
-	private:
-		Logger() = default;
+class LoggerDLL_API Logger
+{
+public:
+	static Logger& GetInstance() {
+		static Logger instance;
+		return instance;
+	}
+	void write_Log(string log);
+private:
+	Logger() = default;
 
-		Logger(const Logger&) = delete;
-		Logger& operator=(const Logger&) = delete;
-		Logger(Logger&&) = delete;
-		Logger& operator=(Logger&&) = delete;
-	};
-}
+	Logger(const Logger&) = delete;
+	Logger& operator=(const Logger&) = delete;
+	Logger(Logger&&) = delete;
+	Logger& operator=(Logger&&) = delete;
+};

@@ -2,8 +2,6 @@
 #include "Logger.h"
 #include "iostream"
 
-using namespace loggerDLL;
-
 void Logger::write_Log(string log) {
 	cout << log << endl;
 }

@@ -6,7 +6,6 @@
 #include "Logger.h"
 
 using namespace std;
-using namespace loggerDLL;
 
 int main() {
 	string input_cmd;
