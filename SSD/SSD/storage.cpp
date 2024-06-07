@@ -39,7 +39,6 @@ public:
 	static const int COMMAND_READ = 0x2;
 	static const int COMMAND_ERASE = 0x3;
 	static const int COMMAND_FLUSH = 0x4;
-	static const int CLEAN_PAGE_DATA = 0;
 
 	void write(int address, int data) override {
 		CommandSet cmd = { COMMAND_WRITE, address, data };
@@ -88,6 +87,7 @@ private:
 	static constexpr int SSD_CAPACITY = 100;
 	static constexpr int MIN_LBA = 0;
 	static constexpr int MAX_LBA = (SSD_CAPACITY -1);
+	static constexpr int CLEAN_PAGE_DATA = 0;
 
 	void checkingValidLba(int address, int size)
 	{
@@ -182,7 +182,7 @@ private:
 		setSsdData(ssdData);
 	}
 
-	int cmdRead(CommandSet cmd) {
+	void cmdRead(CommandSet cmd) {
 		vector<string> ssdData;
 		int address = cmd.address;
 
@@ -191,8 +191,6 @@ private:
 		checkDataInit();
 		ssdData = getSsdData();
 		writeResult(ssdData[address]);
-
-		return stoul(ssdData[address], nullptr, 16);
 	}
 
 	void cmdErase(CommandSet cmd) {
