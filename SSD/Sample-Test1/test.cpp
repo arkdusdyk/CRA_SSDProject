@@ -244,3 +244,27 @@ TEST_F(SSDFIxture, CommandInvokerWriteReadEraseReadVerify) {
     expectedData = 0x00000000;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
+
+TEST_F(SSDFIxture, CommandInvokerWriteAndErase) {
+    char* argv[] = { "ssd.exe", "W", "10", "0xdeadbeef" };
+    invoker.executeCommands(4, argv);
+
+    char* argv1[] = { "ssd.exe", "W", "10", "0x00000001" };
+    invoker.executeCommands(4, argv1);
+
+    char* argv1_1[] = { "ssd.exe", "R", "10" };
+    invoker.executeCommands(3, argv1_1);
+    int expectedData = 0x00000001;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
+ 
+
+    char* argv2[] = { "ssd.exe", "E", "9", "3" };
+    invoker.executeCommands(4, argv2);
+
+    char* argv2_1[] = { "ssd.exe", "R", "10" };
+    invoker.executeCommands(3, argv2_1);
+    expectedData = 0x00000000;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
+
+    // Expected cmdlist has only Erase, 9, 3
+}
