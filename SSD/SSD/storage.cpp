@@ -28,6 +28,7 @@ interface Storage {
 	virtual void write(int address, int data) = 0;
 	virtual int read(int address) = 0;
 	virtual void erase(int address, int size) = 0;
+	virtual void flush() = 0;
 };
 
 class SSD : public Storage {
@@ -35,6 +36,7 @@ public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
 	static const int COMMAND_ERASE = 0x3;
+	static const int COMMAND_FLUSH = 0x4;
 	static const int CLEAN_PAGE_DATA = 0;
 
 	void write(int address, int data) override {
@@ -66,6 +68,9 @@ public:
 		{
 			write(lba, CLEAN_PAGE_DATA);
 		}
+	}
+
+	void flush() override {
 	}
 
 private:

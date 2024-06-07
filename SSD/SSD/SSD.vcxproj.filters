@@ -39,6 +39,9 @@
     <ClCompile Include="Erase.cpp">
       <Filter>Command</Filter>
     </ClCompile>
+    <ClCompile Include="Flush.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssdexcept.h">

@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Erase.cpp" />
+    <ClCompile Include="Flush.cpp" />
     <ClCompile Include="ICommand.h" />
     <ClCompile Include="Invoker.cpp" />
     <ClCompile Include="main.cpp" />

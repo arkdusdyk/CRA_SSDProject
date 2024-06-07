@@ -45,7 +45,25 @@ protected:
 
 	int checkParameter(int argc, char* argv[], CommandSet& commandset) {
 
-		if (argc == 4)
+		if (argc == 2 && string(argv[1]) == "F")
+		{
+			commandset.cmdOpcode = SSD::COMMAND_FLUSH;
+			commandset.address = -1;
+			commandset.data = -1;
+			commandset.size= -1;
+		}
+		else if (argc == 3 && string(argv[1]) == "R")
+		{
+			if (!isDecimal(string(argv[2])))
+			{
+				throw ssd_exception(string("[Argument Validation] Address is invalid: ") + argv[2]);
+			}
+			commandset.cmdOpcode = SSD::COMMAND_READ;
+			commandset.address = std::stoi(string(argv[2]));
+			commandset.data = -1;
+			commandset.size = -1;
+		}
+		else if (argc == 4)
 		{
 			if (string(argv[1]) == "W")
 			{
@@ -60,6 +78,7 @@ protected:
 				commandset.cmdOpcode = SSD::COMMAND_WRITE;
 				commandset.address = std::stoi(string(argv[2]));
 				commandset.data = static_cast<int>(std::stoll(string(argv[3]), nullptr, 16));
+				commandset.size = -1;
 			}
 			else if (string(argv[1]) == "E")
 			{
@@ -73,19 +92,9 @@ protected:
 				}
 				commandset.cmdOpcode = SSD::COMMAND_ERASE;
 				commandset.address = std::stoi(string(argv[2]));
-				commandset.size = std::stoi(string(argv[3]));
 				commandset.data = -1;
+				commandset.size = std::stoi(string(argv[3]));
 			}
-		}
-		else if (argc == 3 && string(argv[1]) == "R")
-		{
-			if (!isDecimal(string(argv[2])))
-			{
-				throw ssd_exception(string("[Argument Validation] Address is invalid: ") + argv[2]);
-			}
-			commandset.cmdOpcode = SSD::COMMAND_READ;
-			commandset.address = std::stoi(string(argv[2]));
-			commandset.data = -1;
 		}
 		else
 			return COMMAND_VALIDATION_FAIL;
