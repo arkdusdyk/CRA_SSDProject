@@ -42,7 +42,7 @@ public:
 	void write(int address, int data) override {
 		vector<string> ssdData;
 
-		checkingValidLba(address);
+		checkingValidLba(address, 1);
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -53,7 +53,7 @@ public:
 	int read(int address) override {
 		vector<string> ssdData;
 
-		checkingValidLba(address);
+		checkingValidLba(address, 1);
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -63,7 +63,7 @@ public:
 	}
 
 	void erase(int address, int size) override {
-		checkingValidSize(address, size);
+		checkingValidLba(address, size);
 		for (int lba = address; lba < address + size; lba++)
 		{
 			write(lba, CLEAN_PAGE_DATA);
@@ -80,23 +80,14 @@ private:
 	static constexpr int MIN_LBA = 0;
 	static constexpr int MAX_LBA = (SSD_CAPACITY -1);
 
-	void checkingValidLba(int address)
+	void checkingValidLba(int address, int size)
 	{
-		if (address < MIN_LBA || address > MAX_LBA)
+		if (address < MIN_LBA || (address + size - 1) > MAX_LBA)
 		{
 			string errorMessage = "address range is ";
 			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
 			throw ssd_exception(errorMessage);
 		}
-	}
-
-	void checkingValidSize(int address, int size)
-	{		
-		for (int lba = address; lba < address + size; lba++)
-		{
-			checkingValidLba(lba);
-		}
-		
 	}
 
 	void checkDataInit() {
