@@ -214,6 +214,10 @@ private:
 		cmdlist.push_back(cmd);
 
 		ofstream cmdFile(CMDFILE);
+		if (!cmdFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
+		}
+
 		for (auto it = cmdlist.begin(); it != cmdlist.end(); it++) {
 			string cmdStr;
 			CommandSet tempCmd = *it;
