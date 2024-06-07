@@ -298,6 +298,7 @@ private:
 						{
 							cmdUnder = commands.erase(cmdUnder);
 							IsErasedWrite = true;
+							isMerged = true;
 							continue;
 						}
 					}
@@ -321,6 +322,7 @@ private:
 				cmd = std::prev(commands.end());
 			}
 		}
+		return isMerged;
 	}
 
 	void writeCommand(vector<CommandSet> cmdlist) {
