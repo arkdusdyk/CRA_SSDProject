@@ -289,6 +289,7 @@ private:
 				cmd = std::prev(commands.end());
 			}
 		}
+	}
 
 	void writeCommand(vector<CommandSet> cmdlist) {
 		ofstream cmdFile(CMDFILE);
