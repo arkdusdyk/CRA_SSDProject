@@ -26,6 +26,12 @@ public:
 		}
 	}
 
+	void setRun(bool runflag) {
+		for (const auto& command : commands) {
+			command->setRunMode(runflag);
+		}
+	}
+
 private:
 	IProduct* product;
 	std::vector<std::unique_ptr<ICommand>> commands;
