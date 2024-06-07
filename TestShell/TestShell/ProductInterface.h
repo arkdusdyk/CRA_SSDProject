@@ -1,8 +1,10 @@
-﻿#include <string>
+﻿#pragma once
+#include <string>
 #include <iostream>
 #include <fstream>
 #include <Windows.h>
 using namespace std;
+
 
 
 __interface IProduct
