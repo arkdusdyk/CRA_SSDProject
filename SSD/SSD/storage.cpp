@@ -5,10 +5,12 @@
 #include <iomanip>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 
 #include "ssdexcept.h"
 
 using namespace std;
+using Range = std::pair<int, int>;
 
 struct CommandSet
 {
@@ -168,6 +170,69 @@ private:
 		return dataToHex.str();
 	}
 
+	bool mergeErase(vector<CommandSet> &commands) {
+		vector<Range> ranges;
+
+		bool isMerged = false;
+
+		for (const auto& cmd : commands)
+		{
+			if (cmd.cmdOpcode == COMMAND_ERASE)
+			{
+				ranges.push_back({ cmd.address, cmd.address + cmd.size - 1 });
+			}
+		}
+		if (ranges.size() <= 1)
+			return isMerged;
+
+		vector<Range> result;
+		sort(ranges.begin(), ranges.end());
+
+		result.push_back(ranges[0]);
+		for (size_t i = 1; i < ranges.size(); ++i) {
+			if (result.back().second >= ranges[i].first - 1) {
+				result.back().second = max(result.back().second, ranges[i].second);
+			}
+			else {
+				result.push_back(ranges[i]);
+			}
+		}
+		for (auto cmd = commands.begin(); cmd != commands.end();)
+		{
+			bool erasedRange = false;
+			bool erasedCmd = false;
+			if (cmd->cmdOpcode == COMMAND_ERASE)
+			{
+				for (std::vector<Range>::iterator range = result.begin(); range != result.end(); )
+				{
+					if (cmd->address == range->first)
+					{
+						cmd->size = range->second - range->first + 1;
+						range = result.erase(range);
+						erasedRange = true;
+					}
+					else
+					{
+						++range;
+						
+					}
+				}
+				if (erasedRange == false)
+				{
+					cmd = commands.erase(cmd);
+					erasedCmd = true;
+					isMerged = true;
+				}
+			}
+
+			if (erasedCmd == false)
+				++cmd;
+
+		}
+
+		return isMerged;
+	}
+
 	void cmdWrite(CommandSet cmd) {
 		vector<string> ssdData;
 		int address = cmd.address;
@@ -216,6 +281,11 @@ private:
 			flush();
 		}
 		cmdlist.push_back(cmd);
+
+		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
+		{
+			mergeErase(cmdlist);
+		}
 
 		ofstream cmdFile(CMDFILE);
 		for (auto it = cmdlist.begin(); it != cmdlist.end(); it++) {
