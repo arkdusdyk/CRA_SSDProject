@@ -130,6 +130,7 @@
     <ClCompile Include="CommandParser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProductInterface.h" />
+    <ClCompile Include="Runner.cpp" />
     <ClCompile Include="TestShell.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
   </ItemGroup>
