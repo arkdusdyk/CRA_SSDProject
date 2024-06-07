@@ -29,7 +29,7 @@ const enum DeviceType {
 
 interface Storage {
 	virtual void write(int address, int data) = 0;
-	virtual void read(int address) = 0;
+	virtual int read(int address) = 0;
 	virtual void erase(int address, int size) = 0;
 	virtual void flush() = 0;
 };
@@ -47,10 +47,19 @@ public:
 		setCommandList(cmd);
 	}
 
-	void read(int address) override {
-		CommandSet cmd = { COMMAND_READ, address, 0, 0 };
+	int read(int address) override {
+		checkingValidLba(address, 1);
 
-		setCommandList(cmd);
+		vector<CommandSet> cmdset = getCommandList();
+		CommandSet cmd = { SSD::COMMAND_READ, address };
+
+		int data;
+		bool cachehit = getDataFromBuffer(cmd, data);
+		if (cachehit)
+		{
+			return data;
+		}
+		return getDataFromNand(address);
 	}
 
 	void erase(int address, int size) override {
@@ -65,9 +74,6 @@ public:
 
 		for (CommandSet cmd : cmdset) {
 			switch (cmd.cmdOpcode) {
-			case COMMAND_READ:
-				cmdRead(cmd);
-				break;
 			case COMMAND_WRITE:
 				cmdWrite(cmd);
 				break;
@@ -162,6 +168,32 @@ private:
 		outFile << value << endl;
 
 		outFile.close();
+	}
+
+	bool getDataFromBuffer(const CommandSet& cmd, int& data)
+	{
+		vector<CommandSet> cmdset = getCommandList();
+		for (vector<CommandSet>::iterator it = cmdset.end(); it != cmdset.begin();)
+		//for (auto& cmd : cmdset)
+		{
+			it--;
+			if (it->cmdOpcode == SSD::COMMAND_WRITE && it->address == cmd.address)
+			{
+				data = it->data;
+				writeResult(IntToHexUppercaseString(data));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	int getDataFromNand(int address)
+	{
+		checkDataInit();
+		vector<string> ssdData = getSsdData();
+		writeResult(ssdData[address]);
+
+		return stoul(ssdData[address], nullptr, 16);
 	}
 
 	string IntToHexUppercaseString(int data)
@@ -320,17 +352,6 @@ private:
 		ssdData = getSsdData();
 		ssdData[address] = IntToHexUppercaseString(data);
 		setSsdData(ssdData);
-	}
-
-	void cmdRead(CommandSet cmd) {
-		vector<string> ssdData;
-		int address = cmd.address;
-
-		checkingValidLba(address, 1);
-
-		checkDataInit();
-		ssdData = getSsdData();
-		writeResult(ssdData[address]);
 	}
 
 	void cmdErase(CommandSet cmd) {
