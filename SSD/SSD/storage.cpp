@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
+#include <memory>
 
 #include "ssdexcept.h"
 
@@ -233,6 +234,63 @@ private:
 		return isMerged;
 	}
 
+	bool mergeWriteAndThenErase(vector<CommandSet>& commands) {
+
+		vector<Range> ranges;
+
+		bool isMerged = false;
+
+		for (const auto& cmd : commands)
+		{
+			if (cmd.cmdOpcode == COMMAND_WRITE || cmd.cmdOpcode == COMMAND_ERASE)
+			{
+				ranges.push_back({ cmd.address, cmd.address + cmd.size - 1 });
+			}
+		}
+
+		if (ranges.size() <= 1)
+			return isMerged;
+
+		for (vector<CommandSet>::iterator cmd = std::prev(commands.end()); cmd > commands.begin();)
+		{
+			bool IsErasedWrite = false;
+			if (cmd->cmdOpcode == COMMAND_ERASE)
+			{
+				int beginAddress = cmd->address;
+				int endAddress = cmd->address + cmd->size - 1;
+				for (vector<CommandSet>::iterator cmdUnder = std::prev(cmd); cmdUnder >= commands.begin();)
+				{
+					if (cmdUnder->cmdOpcode == COMMAND_WRITE)
+					{
+						if (beginAddress <= cmdUnder->address && cmdUnder->address <= endAddress)
+						{
+							cmdUnder = commands.erase(cmdUnder);
+							IsErasedWrite = true;
+							continue;
+						}
+					}
+					
+					if (cmdUnder == commands.begin())
+						break;
+					--cmdUnder;
+				}
+			}
+	
+			if (IsErasedWrite == false)
+			{ 
+				--cmd;
+			}
+			else
+			{
+				/*
+				After an iterator becomes invalidated, restart the loop operation from the beginning to obtain valid iterators.
+				While this approach ensures safe access, it may impact performance.
+				*/
+				cmd = std::prev(commands.end());
+			}
+		}
+	}
+
 	void cmdWrite(CommandSet cmd) {
 		vector<string> ssdData;
 		int address = cmd.address;
@@ -284,6 +342,7 @@ private:
 
 		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
 		{
+			mergeWriteAndThenErase(cmdlist);
 			mergeErase(cmdlist);
 		}
 
