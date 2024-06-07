@@ -7,10 +7,10 @@
 
 using namespace std;
 int main(int argc, char* argv[]) {
+	TestShell ts;
+	ts.createProduct("SSD");
 	if (argc == 1) {
 		string input_cmd;
-		TestShell ts;
-		ts.createProduct("SSD");
 		CommandParser cp;
 		while (1) {
 			try {
@@ -51,6 +51,19 @@ int main(int argc, char* argv[]) {
 	else {
 		Runner runner;
 		runner.readScenario(argv[1]);
-		runner.runScenario();
+		for (auto script : runner.scripts) {
+			cout << script << "\n";
+			transform(script.begin(), script.end(), script.begin(), ::toupper);
+			if (script == "TESTAPP1") {
+				string msg = "testApp1 ";
+				msg.append(ts.testApp1() ? "PASS" : "FAIL");
+				cout << msg << endl;
+			}
+			else if (script == "TESTAPP2") {
+				string msg = "testApp2 ";
+				msg.append(ts.testApp2() ? "PASS" : "FAIL");
+				cout << msg << endl;
+			}
+		}
 	}
 }

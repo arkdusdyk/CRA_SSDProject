@@ -7,6 +7,9 @@ using namespace std;
 
 class Runner {
 public:
+	string filename;
+	vector<string> scripts;
+
 	void readScenario(string file_name) {
 		filename = file_name;
 		ifstream inFile(filename);
@@ -16,12 +19,4 @@ public:
 		}
 		inFile.close();
 	}
-	void runScenario() {
-		for (auto script : scripts) {
-			cout << script << "\n";
-		}
-	}
-private:
-	string filename;
-	vector<string> scripts;
 };
