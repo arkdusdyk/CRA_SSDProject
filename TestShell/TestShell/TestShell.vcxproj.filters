@@ -13,12 +13,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Command">
+      <UniqueIdentifier>{9c03478f-16d6-401a-9303-1f76aa51a654}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="TestShell.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CommandParser.cpp">
@@ -30,32 +30,32 @@
     <ClCompile Include="TestShell_Exception.h">
       <Filter>소스 파일\헤더 파일</Filter>
     </ClCompile>
-    <ClCompile Include="ICommand.h">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Invoker.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ReadCommand.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="WriteCommand.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="HelpCommand.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="EraseCommand.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Command</Filter>
     </ClCompile>
     <ClCompile Include="EraseRangeCommand.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Command</Filter>
     </ClCompile>
     <ClCompile Include="FullReadCommand.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Command</Filter>
     </ClCompile>
     <ClCompile Include="FullWriteCommand.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpCommand.cpp">
+      <Filter>소스 파일\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="ICommand.h">
+      <Filter>소스 파일\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Invoker.cpp">
+      <Filter>소스 파일\Command</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

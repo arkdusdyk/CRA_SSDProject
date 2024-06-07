@@ -141,7 +141,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProductInterface.h" />
     <ClCompile Include="ReadCommand.cpp" />
-    <ClCompile Include="TestShell.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>

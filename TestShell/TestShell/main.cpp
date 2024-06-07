@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <string>
-#include "TestShell.cpp"
 #include "CommandParser.cpp"
 #include "Logger.h"
 #include "invoker.cpp"
@@ -41,15 +40,6 @@ int main() {
 			invoker.execute(cp);
 			if (cp.cmd == "EXIT")
 				break;
-			//else if (cp.cmd == "TESTAPP1") {
-			//	string msg = "testApp1 ";
-			//	msg.append(ts.testApp1() ? "PASS" : "FAIL");
-			//	cout << msg << endl;
-			//} else if (cp.cmd == "TESTAPP2") {
-			//	string msg = "testApp2 ";
-			//	msg.append(ts.testApp2() ? "PASS" : "FAIL");
-			//	cout << msg << endl;
-			//}
 		}
 		catch (exception) {
 			cout << "INVALID COMMAND\n";
