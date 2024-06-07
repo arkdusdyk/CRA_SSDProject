@@ -26,6 +26,10 @@ int main() {
 				ts.Read(cp.lba);
 			else if (cp.cmd == "WRITE")
 				ts.Write(cp.lba, cp.data);
+			else if (cp.cmd == "ERASE")
+				ts.Erase(cp.lba, cp.size);
+			else if(cp.cmd=="ERASE_RANGE")
+				ts.EraseRange(cp.lba, cp.endLba);
 			else if (cp.cmd == "FULLWRITE")
 				ts.FulllWrite(cp.data);
 			else if (cp.cmd == "FULLREAD")
