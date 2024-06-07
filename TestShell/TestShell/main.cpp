@@ -57,9 +57,8 @@ int main(int argc, char* argv[]) {
 		else {
 			for (auto script : runner.scripts) {
 				try {
-					bool result = false;
 					cout << script << " --- Run...";
-					cp.command_parse(input_cmd);
+					cp.command_parse(script);
 					transform(script.begin(), script.end(), script.begin(), ::toupper);
 					invoker.execute(cp);
 					cout << "Pass" << "\n";
