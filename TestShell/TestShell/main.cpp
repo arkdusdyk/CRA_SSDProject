@@ -6,12 +6,8 @@
 #include "Runner.cpp"
 
 using namespace std;
-int main(string args) {
-	if (args.length() == 1) {
-		Runner runner;
-		runner.runScenario(args);
-	}
-	else {
+int main(int argc, char* argv[]) {
+	if (argc == 1) {
 		string input_cmd;
 		TestShell ts;
 		ts.createProduct("SSD");
@@ -51,5 +47,10 @@ int main(string args) {
 				cout << "INVALID COMMAND\n";
 			}
 		}
+	}
+	else {
+		Runner runner;
+		runner.readScenario(argv[1]);
+		runner.runScenario();
 	}
 }
