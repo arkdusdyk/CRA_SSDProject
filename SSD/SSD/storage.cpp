@@ -352,6 +352,13 @@ private:
 
 		cmdlist = getCommandList();
 		cmdlist.push_back(cmd);
+
+		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
+		{
+			mergeWriteAndThenErase(cmdlist);
+			mergeErase(cmdlist);
+		}
+
 		writeCommand(cmdlist);
 		if (cmdlist.size() >= 10) {
 			flush();
