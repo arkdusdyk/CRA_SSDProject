@@ -13,6 +13,18 @@ int main() {
 	ts.createProduct("SSD");
 	CommandParser cp;
 	Logger &logger = Logger::GetInstance();
+	logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_CONSOLE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_CONSOLE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_CONSOLE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "시작");
+	logger.write_Log(eLoggingOpt::ONLY_CONSOLE, __FUNCTION__, "시작");
 	while (1) {
 		try {
 			cout << "> ";

@@ -31,7 +31,10 @@ private:
 	Logger& operator=(Logger&&) = delete;
 
 	string getCurrentTimetoString();
+	tm* now_time;
 	string setPaddingString(std::string const& str);
+
+	void ChangeExt(char* path, char* newext);
 
 
 	void printConsole(const string& log);
