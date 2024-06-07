@@ -134,5 +134,8 @@
     <ClCompile Include="TestShell.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="run_list.lst" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

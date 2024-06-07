@@ -50,19 +50,24 @@ int main(int argc, char* argv[]) {
 	}
 	else {
 		Runner runner;
-		runner.readScenario(argv[1]);
-		for (auto script : runner.scripts) {
-			cout << script << "\n";
-			transform(script.begin(), script.end(), script.begin(), ::toupper);
-			if (script == "TESTAPP1") {
-				string msg = "testApp1 ";
-				msg.append(ts.testApp1() ? "PASS" : "FAIL");
-				cout << msg << endl;
-			}
-			else if (script == "TESTAPP2") {
-				string msg = "testApp2 ";
-				msg.append(ts.testApp2() ? "PASS" : "FAIL");
-				cout << msg << endl;
+		bool run_flag = runner.readScenario(argv[1]);
+		ts.setRunMode(run_flag);
+		if (run_flag == false)
+			cout << "File Open Error\n";
+		else {
+			for (auto script : runner.scripts) {
+				bool result = false;
+				cout << script << " --- Run...";
+				transform(script.begin(), script.end(), script.begin(), ::toupper);
+				if (script == "TESTAPP1") {
+					result = ts.testApp1();
+				}
+				else if (script == "TESTAPP2") {
+					result = ts.testApp2();
+				}
+				cout << (result ? "Pass" : "FAIL!") << "\n";
+				if (result == false)
+					break;
 			}
 		}
 	}

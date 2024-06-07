@@ -10,13 +10,18 @@ public:
 	string filename;
 	vector<string> scripts;
 
-	void readScenario(string file_name) {
+	bool readScenario(string file_name) {
 		filename = file_name;
 		ifstream inFile(filename);
+		
+		if (inFile.fail())
+			return false;
+
 		string script_line;
 		while (getline(inFile, script_line)) {
 			scripts.push_back(script_line);
 		}
 		inFile.close();
+		return true;
 	}
 };

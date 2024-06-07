@@ -16,6 +16,9 @@ public:
 		createProductFactory cPF(device);
 		setProduct(cPF.getProduct());
 	}
+	void setRunMode(bool run_flag) {
+		running = run_flag;
+	}
 	void Write(int arr, string value) {
 		checkInvalid_LBA(arr);
 		checkInvalid_Value(value);
@@ -39,7 +42,8 @@ public:
 		vector<string> results;
 		for (int lba = 0; lba < MAX_LBA; lba++) {
 			results.push_back(product->Read(lba));
-			cout << results[lba] << endl;
+			if(running == false)
+				cout << results[lba] << endl;
 		}
 		return results;
 	}
@@ -72,7 +76,8 @@ public:
 
 			if (readValue != TEST_PATTERN_TESPAPP2) return false;
 
-			cout << readValue << "\n";
+			if(running == false)
+				cout << readValue << "\n";																																																								
 		}
 
 		return true;
@@ -100,6 +105,8 @@ private:
 		"6. fullread (예) fullread : 모든 LBA(0~99) 까지 read 수행)"
 	};
 	IProduct* product;
+	
+	bool running = false;
 
 	void checkInvalid_LBA(int arr) {
 		if (arr < MIN_LBA || arr > MAX_LBA)
