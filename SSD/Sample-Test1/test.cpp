@@ -9,6 +9,7 @@
 #include "../SSD/Invoker.cpp"
 #include "../SSD/Write.cpp"
 #include "../SSD/Read.cpp"
+#include "../SSD/Erase.cpp"
 
 class SSDFIxture : public testing::Test {
 public:
@@ -22,6 +23,7 @@ public:
     void SetUp() override {
         invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
         invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
+        invoker.addCommand(std::move(std::make_unique<EraseCommand>()));
     }
 
     void TearDown() override {
@@ -30,6 +32,21 @@ public:
         DeleteFile(nandPath);
         DeleteFile(outputPath);
     };
+
+    int readResult()
+    {
+        ifstream inFile(OUTPUT);
+
+        if (!inFile.is_open()) {
+            throw ssd_exception("Cannot Open File");
+        }
+
+        string line;
+        getline(inFile, line);
+        inFile.close();
+
+        return std::stoul(line, nullptr, 16);
+    }
 };
 
 TEST_F(SSDFIxture, SsdWrite0) {
@@ -55,15 +72,16 @@ TEST_F(SSDFIxture, SsdWrite100) {
 TEST_F(SSDFIxture, SsdRead0) {
     int address = 0;
     int expected = 0x00000000;
-    int result = ssd->read(address);
-    EXPECT_THAT(expected, testing::Eq(expected));
+    ssd->read(address);
+    
+    EXPECT_THAT(readResult(), testing::Eq(expected));
 }
 
 TEST_F(SSDFIxture, SsdRead99) {
     int address = 99;
     int expected = 0x00000000;
-    int result = ssd->read(address);
-    EXPECT_THAT(expected, testing::Eq(expected));
+    ssd->read(address);
+    EXPECT_THAT(readResult(), testing::Eq(expected));
 }
 
 TEST_F(SSDFIxture, SsdRead100) {
@@ -126,8 +144,8 @@ TEST_F(SSDFIxture, CommandInvokerRead0) {
     char* argv[] = { "ssd.exe", "R", "0"};
     int ret = invoker.executeCommands(argc, argv);
    
-    int expectedData = 0;
-    EXPECT_THAT(ret, testing::Eq(expectedData));
+    int expectedData = 0x00000000;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
 
 TEST_F(SSDFIxture, CommandInvokerWrite100) {
@@ -158,7 +176,7 @@ TEST_F(SSDFIxture, CommandInvokerWriteRead0Verify) {
     int ret = invoker.executeCommands(argc, argv);
 
     int expectedData = 0xdeadbeef;
-    EXPECT_THAT(ret, testing::Eq(expectedData));
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
 
 TEST_F(SSDFIxture, CommandInvokerWriteRead50Verify) {
@@ -171,7 +189,7 @@ TEST_F(SSDFIxture, CommandInvokerWriteRead50Verify) {
     int ret = invoker.executeCommands(argc, argv);
 
     int expectedData = 0xdeadbeef;
-    EXPECT_THAT(ret, testing::Eq(expectedData));
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
 
 
@@ -197,4 +215,28 @@ TEST_F(SSDFIxture, CommandInvokerReadInvalidAddressFormat0x0) {
     EXPECT_THROW({
          invoker.executeCommands(argc, argv);
         }, ssd_exception);
+}
+
+TEST_F(SSDFIxture, CommandInvokerWriteReadEraseReadVerify) {
+    int argc = 4;
+    char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef" };
+    invoker.executeCommands(argc, argv);
+    argv[1] = "R";
+    argv[3] = "";
+    int ret = invoker.executeCommands(3, argv);
+
+    int expectedData = 0xdeadbeef;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
+
+    argv[1] = "E";
+    argv[2] = "0";
+    argv[3] = "1";
+    ret = invoker.executeCommands(4, argv);
+
+    argv[1] = "R";
+    argv[3] = "";
+    ret = invoker.executeCommands(3, argv);
+
+    expectedData = 0x00000000;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }

@@ -36,6 +36,9 @@
     <ClCompile Include="Read.cpp">
       <Filter>Command</Filter>
     </ClCompile>
+    <ClCompile Include="Erase.cpp">
+      <Filter>Command</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssdexcept.h">

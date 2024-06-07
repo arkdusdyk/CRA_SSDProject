@@ -15,6 +15,7 @@ struct CommandSet
 	int cmdOpcode;
 	int address;
 	int data;
+	int size;
 };
 
 #define interface struct
@@ -26,12 +27,14 @@ const enum DeviceType {
 interface Storage {
 	virtual void write(int address, int data) = 0;
 	virtual int read(int address) = 0;
+	virtual void erase(int address, int size) = 0;
 };
 
 class SSD : public Storage {
 public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
+	static const int COMMAND_ERASE = 0x3;
 	static const int CLEAN_PAGE_DATA = 0;
 
 	void write(int address, int data) override {
@@ -57,6 +60,14 @@ public:
 		return stoul(ssdData[address], nullptr, 16);
 	}
 
+	void erase(int address, int size) override {
+		checkingValidSize(address, size);
+		for (int lba = address; lba < address + size; lba++)
+		{
+			write(lba, CLEAN_PAGE_DATA);
+		}
+	}
+
 private:
 	const string OUTPUT = "result.txt";
 	const string NAND = "nand.txt";
@@ -72,6 +83,15 @@ private:
 			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
 			throw ssd_exception(errorMessage);
 		}
+	}
+
+	void checkingValidSize(int address, int size)
+	{		
+		for (int lba = address; lba < address + size; lba++)
+		{
+			checkingValidLba(lba);
+		}
+		
 	}
 
 	void checkDataInit() {

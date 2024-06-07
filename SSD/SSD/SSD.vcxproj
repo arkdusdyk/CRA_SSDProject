@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Erase.cpp" />
     <ClCompile Include="ICommand.h" />
     <ClCompile Include="Invoker.cpp" />
     <ClCompile Include="main.cpp" />
