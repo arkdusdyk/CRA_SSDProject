@@ -30,5 +30,32 @@
     <ClCompile Include="TestShell_Exception.h">
       <Filter>소스 파일\헤더 파일</Filter>
     </ClCompile>
+    <ClCompile Include="ICommand.h">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Invoker.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="WriteCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="EraseCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="EraseRangeCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FullReadCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FullWriteCommand.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
