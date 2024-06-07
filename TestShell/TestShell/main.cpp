@@ -3,13 +3,16 @@
 #include <string>
 #include "TestShell.cpp"
 #include "CommandParser.cpp"
+#include "Logger.h"
 
 using namespace std;
+
 int main() {
 	string input_cmd;
 	TestShell ts;
 	ts.createProduct("SSD");
 	CommandParser cp;
+	Logger &logger = Logger::GetInstance();
 	while (1) {
 		try {
 			cout << "> ";

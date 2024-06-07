@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestShell", "TestShell\Test
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample-Test1", "Sample-Test1\Sample-Test1.vcxproj", "{8330CB8B-DEC4-4A84-993A-51D52B4358ED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoggerLib", "LoggerLib\LoggerLib.vcxproj", "{C8878277-0D94-4A16-8A1A-353D10E62914}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{8330CB8B-DEC4-4A84-993A-51D52B4358ED}.Release|x64.Build.0 = Release|x64
 		{8330CB8B-DEC4-4A84-993A-51D52B4358ED}.Release|x86.ActiveCfg = Release|Win32
 		{8330CB8B-DEC4-4A84-993A-51D52B4358ED}.Release|x86.Build.0 = Release|Win32
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Debug|x64.ActiveCfg = Debug|x64
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Debug|x64.Build.0 = Debug|x64
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Debug|x86.ActiveCfg = Debug|Win32
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Debug|x86.Build.0 = Debug|Win32
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Release|x64.ActiveCfg = Release|x64
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Release|x64.Build.0 = Release|x64
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Release|x86.ActiveCfg = Release|Win32
+		{C8878277-0D94-4A16-8A1A-353D10E62914}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
