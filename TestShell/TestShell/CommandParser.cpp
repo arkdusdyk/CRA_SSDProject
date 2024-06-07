@@ -8,7 +8,9 @@ class CommandParser {
 public:
 	string cmd;
 	int lba;
+	int endLba;
 	string data;
+	int size;
 	
 	void command_parse(string cmd_line) {
 		if (cmd_line == "")
@@ -62,6 +64,18 @@ public:
 				if (isDataValid(tokens[2]) == false)
 					throw exception("Data out of range");
 				data = tokens[2];
+			}
+			else if (cmd == "erase") {
+				if (isDataValid(tokens[1]) == false)
+					throw exception("Data out of range");
+				lba = stoi(tokens[1]);
+				size = stoi(tokens[2]);
+			}
+			else if (cmd == "erase_range") {
+				if (isDataValid(tokens[1]) == false || isDataValid(tokens[2]) == false)
+					throw exception("Data out of range");
+				lba = stoi(tokens[1]);
+				endLba = stoi(tokens[2]);
 			}
 			else
 				throw exception("INVALID COMMAND");

@@ -9,6 +9,7 @@ __interface IProduct
 {
 	virtual void Write(int addr, string value) = 0;
 	virtual string Read(int addr) = 0;
+	virtual void Erase(int addr, int size) = 0;
 };
 
 class SSDProduct : public IProduct
@@ -46,6 +47,13 @@ public:
 		}
 		readFile.close();
 		return result;
+	}
+
+	virtual void Erase(int addr, int size) override {
+		string cmd = curPath;
+		cmd.append(mExecuteName + " E " + std::to_string(addr) + " " + std::to_string(size));
+		if (system(cmd.c_str()) != 0)
+			cout << "실행파일을 실행하지 못했습니다." << endl;
 	}
 private:
 	char curPath[256];

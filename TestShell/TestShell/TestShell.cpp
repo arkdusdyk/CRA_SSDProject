@@ -29,6 +29,27 @@ public:
 		return result;
 	}
 
+	void Erase(int arr, int size) {
+		checkInvalid_LBA(arr);
+		
+		int tmp = size;
+		for (int i = 0; i < (size/10 + 1); i++) {
+			if (tmp > 10) {
+				product->Erase(arr + i * 10, 10);
+				tmp -= 10;
+			}
+			else {
+				product->Erase(arr + i * 10, tmp);
+			}
+		}
+	}
+
+	void EraseRange(int arr, int endArr) {
+		checkInvalid_LBA(arr);
+		checkInvalid_LBA(endArr);
+		Erase(arr, endArr - arr);
+	}
+
 	void FulllWrite( string value) {
 		for (int lba = 0; lba < 100; lba++) {
 			product->Write(lba, value);
