@@ -44,6 +44,7 @@ public:
 	void write(int address, int data) override {
 		CommandSet cmd = { COMMAND_WRITE, address, data };
 
+		checkingValidLba(address, 1);
 		setCommandList(cmd);
 	}
 
@@ -65,6 +66,7 @@ public:
 	void erase(int address, int size) override {
 		CommandSet cmd = { COMMAND_ERASE, address, 0, size };
 
+		checkingValidLba(address, size);
 		setCommandList(cmd);
 	}
 
@@ -348,8 +350,6 @@ private:
 		int address = cmd.address;
 		int data = cmd.data;
 
-		checkingValidLba(address, 1);
-
 		checkDataInit();
 		ssdData = getSsdData();
 		ssdData[address] = IntToHexUppercaseString(data);
@@ -361,7 +361,6 @@ private:
 		int address = cmd.address;
 		int size = cmd.size;
 
-		checkingValidLba(address, size);
 		checkDataInit();
 		ssdData = getSsdData();
 		for (int i = address; i < address + size; i++) {
