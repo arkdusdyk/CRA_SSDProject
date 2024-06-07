@@ -63,11 +63,15 @@ public:
 	}
 
 	void erase(int address, int size) override {
+		vector<string> ssdData;
+
 		checkingValidLba(address, size);
-		for (int lba = address; lba < address + size; lba++)
-		{
-			write(lba, CLEAN_PAGE_DATA);
+		checkDataInit();
+		ssdData = getSsdData();
+		for (int i = address; i < address + size; i++) {
+			ssdData[address] = IntToHexUppercaseString(0);
 		}
+		setSsdData(ssdData);
 	}
 
 	void flush() override {
