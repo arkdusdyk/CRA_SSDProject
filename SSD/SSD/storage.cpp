@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -7,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <windows.h>
 
 #include "ssdexcept.h"
 
@@ -21,15 +23,13 @@ struct CommandSet
 	int size;
 };
 
-#define interface struct
-
 const enum DeviceType {
 	TYPE_SSD,
 };
 
 interface Storage {
 	virtual void write(int address, int data) = 0;
-	virtual int read(int address) = 0;
+	virtual void read(int address) = 0;
 	virtual void erase(int address, int size) = 0;
 	virtual void flush() = 0;
 };
@@ -40,7 +40,6 @@ public:
 	static const int COMMAND_READ = 0x2;
 	static const int COMMAND_ERASE = 0x3;
 	static const int COMMAND_FLUSH = 0x4;
-	static const int CLEAN_PAGE_DATA = 0;
 
 	void write(int address, int data) override {
 		CommandSet cmd = { COMMAND_WRITE, address, data };
@@ -48,12 +47,10 @@ public:
 		setCommandList(cmd);
 	}
 
-	int read(int address) override {
+	void read(int address) override {
 		CommandSet cmd = { COMMAND_READ, address, 0, 0 };
 
 		setCommandList(cmd);
-
-		return 0;
 	}
 
 	void erase(int address, int size) override {
@@ -78,9 +75,11 @@ public:
 				cmdErase(cmd);
 				break;
 			default:
-				cout << "Error" << endl;
+				throw ssd_exception("Unknown Command");
+				break;
 			}
 		}
+		DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
 	}
 
 private:
@@ -90,6 +89,7 @@ private:
 	static constexpr int SSD_CAPACITY = 100;
 	static constexpr int MIN_LBA = 0;
 	static constexpr int MAX_LBA = (SSD_CAPACITY -1);
+	static constexpr int CLEAN_PAGE_DATA = 0;
 
 	void checkingValidLba(int address, int size)
 	{
@@ -164,7 +164,7 @@ private:
 		outFile.close();
 	}
 
-	std::string IntToHexUppercaseString(int data)
+	string IntToHexUppercaseString(int data)
 	{
 		std::stringstream dataToHex;
 		dataToHex << "0x" << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << data;
@@ -289,6 +289,23 @@ private:
 				cmd = std::prev(commands.end());
 			}
 		}
+
+	void writeCommand(vector<CommandSet> cmdlist) {
+		ofstream cmdFile(CMDFILE);
+		if (!cmdFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
+		}
+
+		for (CommandSet tempCmd : cmdlist) {
+			string cmdStr;
+
+			cmdStr = to_string(tempCmd.cmdOpcode) + " ";
+			cmdStr += to_string(tempCmd.address) + " ";
+			cmdStr += to_string(tempCmd.data) + " ";
+			cmdStr += to_string(tempCmd.size);
+			cmdFile << cmdStr << endl;
+		}
+		cmdFile.close();
 	}
 
 	void cmdWrite(CommandSet cmd) {
@@ -304,7 +321,7 @@ private:
 		setSsdData(ssdData);
 	}
 
-	int cmdRead(CommandSet cmd) {
+	void cmdRead(CommandSet cmd) {
 		vector<string> ssdData;
 		int address = cmd.address;
 
@@ -313,8 +330,6 @@ private:
 		checkDataInit();
 		ssdData = getSsdData();
 		writeResult(ssdData[address]);
-
-		return stoul(ssdData[address], nullptr, 16);
 	}
 
 	void cmdErase(CommandSet cmd) {
@@ -335,42 +350,11 @@ private:
 		vector<CommandSet> cmdlist;
 
 		cmdlist = getCommandList();
-		if (cmdlist.size() > 10) {
+		cmdlist.push_back(cmd);
+		writeCommand(cmdlist);
+		if (cmdlist.size() >= 10) {
 			flush();
 		}
-		cmdlist.push_back(cmd);
-
-		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
-		{
-			mergeWriteAndThenErase(cmdlist);
-			mergeErase(cmdlist);
-		}
-
-		ofstream cmdFile(CMDFILE);
-		for (auto it = cmdlist.begin(); it != cmdlist.end(); it++) {
-			string cmdStr;
-			CommandSet tempCmd = *it;
-			switch (tempCmd.cmdOpcode) {
-			case COMMAND_READ:
-				cmdStr = "R ";
-				break;
-			case COMMAND_WRITE:
-				cmdStr = "W ";
-				break;
-			case COMMAND_ERASE:
-				cmdStr = "E ";
-				break;
-			default:
-				cout << "Unknown" << endl;
-				break;
-			}
-			cmdStr += to_string(tempCmd.address) + " ";
-			cmdStr += to_string(tempCmd.data) + " ";
-			cmdStr += to_string(tempCmd.size);
-			cmdFile << cmdStr << endl;
-		}
-
-		cmdFile.close();
 	}
 
 	vector<CommandSet> getCommandList() {
@@ -386,26 +370,11 @@ private:
 		while (getline(cmdFile, line)) {
 			istringstream iss(line);
 			CommandSet tempCmd;
-			char tempStr;
 
-			iss >> tempStr >> tempCmd.address >> tempCmd.data >> tempCmd.size;
-
-			switch (tempStr) {
-			case 'R':
-				tempCmd.cmdOpcode = COMMAND_READ;
-				break;
-			case 'W':
-				tempCmd.cmdOpcode = COMMAND_WRITE;
-				break;
-			case 'E':
-				tempCmd.cmdOpcode = COMMAND_ERASE;
-				break;
-			default:
-				cout << "Unknown Command" << endl;
-				break;
-			}
+			iss >> tempCmd.cmdOpcode >> tempCmd.address >> tempCmd.data >> tempCmd.size;
 			cmdlist.push_back(tempCmd);
 		}
+		cmdFile.close();
 
 		return cmdlist;
 	}
