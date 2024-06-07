@@ -169,6 +169,24 @@ private:
 		return dataToHex.str();
 	}
 
+	void writeCommand(vector<CommandSet> cmdlist) {
+		ofstream cmdFile(CMDFILE);
+		if (!cmdFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
+		}
+
+		for (CommandSet tempCmd : cmdlist) {
+			string cmdStr;
+
+			cmdStr = to_string(tempCmd.cmdOpcode) + " ";
+			cmdStr += to_string(tempCmd.address) + " ";
+			cmdStr += to_string(tempCmd.data) + " ";
+			cmdStr += to_string(tempCmd.size);
+			cmdFile << cmdStr << endl;
+		}
+		cmdFile.close();
+	}
+
 	void cmdWrite(CommandSet cmd) {
 		vector<string> ssdData;
 		int address = cmd.address;
@@ -212,24 +230,7 @@ private:
 
 		cmdlist = getCommandList();
 		cmdlist.push_back(cmd);
-
-		ofstream cmdFile(CMDFILE);
-		if (!cmdFile.is_open()) {
-			throw ssd_exception("Cannot Open File");
-		}
-
-		for (auto it = cmdlist.begin(); it != cmdlist.end(); it++) {
-			string cmdStr;
-			CommandSet tempCmd = *it;
-
-			cmdStr = to_string(tempCmd.cmdOpcode) + " ";
-			cmdStr += to_string(tempCmd.address) + " ";
-			cmdStr += to_string(tempCmd.data) + " ";
-			cmdStr += to_string(tempCmd.size);
-			cmdFile << cmdStr << endl;
-		}
-		cmdFile.close();
-
+		writeCommand(cmdlist);
 		if (cmdlist.size() >= 10) {
 			flush();
 		}
