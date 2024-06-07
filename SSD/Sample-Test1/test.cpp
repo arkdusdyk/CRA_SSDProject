@@ -10,6 +10,7 @@
 #include "../SSD/Write.cpp"
 #include "../SSD/Read.cpp"
 #include "../SSD/Erase.cpp"
+#include "../SSD/Flush.cpp"
 
 class SSDFIxture : public testing::Test {
 public:
@@ -24,13 +25,16 @@ public:
         invoker.addCommand(std::move(std::make_unique<WriteCommand>()));
         invoker.addCommand(std::move(std::make_unique<ReadCommand>()));
         invoker.addCommand(std::move(std::make_unique<EraseCommand>()));
+        invoker.addCommand(std::move(std::make_unique<FlushCommand>()));
     }
 
     void TearDown() override {
         LPCWSTR nandPath = L"nand.txt";
         LPCWSTR outputPath = L"result.txt";
+        LPCWSTR cmdlistPath = L"cmdlist.txt";
         DeleteFile(nandPath);
         DeleteFile(outputPath);
+        DeleteFile(cmdlistPath);
     };
 
     int readResult()
