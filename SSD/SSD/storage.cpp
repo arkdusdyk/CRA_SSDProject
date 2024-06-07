@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -5,6 +6,7 @@
 #include <iomanip>
 #include <stdexcept>
 #include <vector>
+#include <windows.h>
 
 #include "ssdexcept.h"
 
@@ -26,7 +28,7 @@ const enum DeviceType {
 
 interface Storage {
 	virtual void write(int address, int data) = 0;
-	virtual int read(int address) = 0;
+	virtual void read(int address) = 0;
 	virtual void erase(int address, int size) = 0;
 	virtual void flush() = 0;
 };
@@ -45,12 +47,10 @@ public:
 		setCommandList(cmd);
 	}
 
-	int read(int address) override {
+	void read(int address) override {
 		CommandSet cmd = { COMMAND_READ, address, 0, 0 };
 
 		setCommandList(cmd);
-
-		return 0;
 	}
 
 	void erase(int address, int size) override {
@@ -78,6 +78,7 @@ public:
 				cout << "Error" << endl;
 			}
 		}
+		DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
 	}
 
 private:
@@ -161,7 +162,7 @@ private:
 		outFile.close();
 	}
 
-	std::string IntToHexUppercaseString(int data)
+	string IntToHexUppercaseString(int data)
 	{
 		std::stringstream dataToHex;
 		dataToHex << "0x" << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << data;
@@ -212,36 +213,24 @@ private:
 		vector<CommandSet> cmdlist;
 
 		cmdlist = getCommandList();
-		if (cmdlist.size() > 10) {
-			flush();
-		}
 		cmdlist.push_back(cmd);
 
 		ofstream cmdFile(CMDFILE);
 		for (auto it = cmdlist.begin(); it != cmdlist.end(); it++) {
 			string cmdStr;
 			CommandSet tempCmd = *it;
-			switch (tempCmd.cmdOpcode) {
-			case COMMAND_READ:
-				cmdStr = "R ";
-				break;
-			case COMMAND_WRITE:
-				cmdStr = "W ";
-				break;
-			case COMMAND_ERASE:
-				cmdStr = "E ";
-				break;
-			default:
-				cout << "Unknown" << endl;
-				break;
-			}
+
+			cmdStr = to_string(tempCmd.cmdOpcode) + " ";
 			cmdStr += to_string(tempCmd.address) + " ";
 			cmdStr += to_string(tempCmd.data) + " ";
 			cmdStr += to_string(tempCmd.size);
 			cmdFile << cmdStr << endl;
 		}
-
 		cmdFile.close();
+
+		if (cmdlist.size() >= 10) {
+			flush();
+		}
 	}
 
 	vector<CommandSet> getCommandList() {
@@ -257,26 +246,11 @@ private:
 		while (getline(cmdFile, line)) {
 			istringstream iss(line);
 			CommandSet tempCmd;
-			char tempStr;
 
-			iss >> tempStr >> tempCmd.address >> tempCmd.data >> tempCmd.size;
-
-			switch (tempStr) {
-			case 'R':
-				tempCmd.cmdOpcode = COMMAND_READ;
-				break;
-			case 'W':
-				tempCmd.cmdOpcode = COMMAND_WRITE;
-				break;
-			case 'E':
-				tempCmd.cmdOpcode = COMMAND_ERASE;
-				break;
-			default:
-				cout << "Unknown Command" << endl;
-				break;
-			}
+			iss >> tempCmd.cmdOpcode >> tempCmd.address >> tempCmd.data >> tempCmd.size;
 			cmdlist.push_back(tempCmd);
 		}
+		cmdFile.close();
 
 		return cmdlist;
 	}
