@@ -1,3 +1,4 @@
+#pragma once
 #include <stdexcept>
 #include <iostream>
 #include <vector>
@@ -66,13 +67,13 @@ public:
 				data = tokens[2];
 			}
 			else if (cmd == "erase") {
-				if (isDataValid(tokens[1]) == false)
+				if (isLBAinRange(tokens[1]) == false || isLBAinRange(tokens[2]) == false)
 					throw exception("Data out of range");
 				lba = stoi(tokens[1]);
 				size = stoi(tokens[2]);
 			}
 			else if (cmd == "erase_range") {
-				if (isDataValid(tokens[1]) == false || isDataValid(tokens[2]) == false)
+				if (isLBAinRange(tokens[1]) == false || isLBAinRange(tokens[2]) == false)
 					throw exception("Data out of range");
 				lba = stoi(tokens[1]);
 				endLba = stoi(tokens[2]);
