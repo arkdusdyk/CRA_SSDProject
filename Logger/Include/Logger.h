@@ -8,6 +8,12 @@
 #include <string>
 using namespace std;
 
+enum class LoggerDLL_API eLoggingOpt {
+	ALL_PRINT = 0,
+	ONLY_FILE,
+	ONLY_CONSOLE
+};
+
 class LoggerDLL_API Logger
 {
 public:
@@ -15,7 +21,7 @@ public:
 		static Logger instance;
 		return instance;
 	}
-	void write_Log(string log);
+	void write_Log(eLoggingOpt loggingOption, string functionName, string log);
 private:
 	Logger() = default;
 
@@ -23,4 +29,14 @@ private:
 	Logger& operator=(const Logger&) = delete;
 	Logger(Logger&&) = delete;
 	Logger& operator=(Logger&&) = delete;
+
+	string getCurrentTimetoString();
+	tm* now_time;
+	string setPaddingString(std::string const& str);
+
+	void ChangeExt(char* path, char* newext);
+
+
+	void printConsole(const string& log);
+	void printFile(const string& log);
 };
