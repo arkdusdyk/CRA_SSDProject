@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -5,19 +6,22 @@
 #include <iomanip>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
+#include <memory>
+#include <windows.h>
 
 #include "ssdexcept.h"
 
 using namespace std;
+using Range = std::pair<int, int>;
 
 struct CommandSet
 {
 	int cmdOpcode;
 	int address;
 	int data;
+	int size;
 };
-
-#define interface struct
 
 const enum DeviceType {
 	TYPE_SSD,
@@ -26,47 +30,78 @@ const enum DeviceType {
 interface Storage {
 	virtual void write(int address, int data) = 0;
 	virtual int read(int address) = 0;
+	virtual void erase(int address, int size) = 0;
+	virtual void flush() = 0;
 };
 
 class SSD : public Storage {
 public:
 	static const int COMMAND_WRITE = 0x1;
 	static const int COMMAND_READ = 0x2;
-	static const int CLEAN_PAGE_DATA = 0;
+	static const int COMMAND_ERASE = 0x3;
+	static const int COMMAND_FLUSH = 0x4;
 
 	void write(int address, int data) override {
-		vector<string> ssdData;
+		CommandSet cmd = { COMMAND_WRITE, address, data };
 
-		checkingValidLba(address);
-
-		checkDataInit();
-		ssdData = getSsdData();
-		ssdData[address] = IntToHexUppercaseString(data);
-		setSsdData(ssdData);
+		checkingValidLba(address, 1);
+		setCommandList(cmd);
 	}
 
 	int read(int address) override {
-		vector<string> ssdData;
+		checkingValidLba(address, 1);
 
-		checkingValidLba(address);
+		vector<CommandSet> cmdset = getCommandList();
+		CommandSet cmd = { SSD::COMMAND_READ, address };
 
-		checkDataInit();
-		ssdData = getSsdData();
-		writeResult(ssdData[address]);
+		int data;
+		bool cachehit = getDataFromBuffer(cmd, data);
+		if (cachehit)
+		{
+			return data;
+		}
+		return getDataFromNand(address);
+	}
 
-		return stoul(ssdData[address], nullptr, 16);
+	void erase(int address, int size) override {
+		CommandSet cmd = { COMMAND_ERASE, address, 0, size };
+
+		checkingValidLba(address, size);
+		setCommandList(cmd);
+	}
+
+	void flush() override {
+		vector<CommandSet> cmdset;
+		cmdset = getCommandList();
+
+		for (CommandSet cmd : cmdset) {
+			switch (cmd.cmdOpcode) {
+			case COMMAND_WRITE:
+				cmdWrite(cmd);
+				break;
+			case COMMAND_ERASE:
+				cmdErase(cmd);
+				break;
+			default:
+				throw ssd_exception("Unknown Command");
+				break;
+			}
+		}
+		DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
 	}
 
 private:
 	const string OUTPUT = "result.txt";
 	const string NAND = "nand.txt";
+	const string CMDFILE = "cmdlist.txt";
 	static constexpr int SSD_CAPACITY = 100;
 	static constexpr int MIN_LBA = 0;
 	static constexpr int MAX_LBA = (SSD_CAPACITY -1);
+	static constexpr int CLEAN_PAGE_DATA = 0;
 
-	void checkingValidLba(int address)
+	void checkingValidLba(int address, int size)
 	{
-		if (address < MIN_LBA || address > MAX_LBA)
+		if (address < MIN_LBA || (address + size - 1) > MAX_LBA)
 		{
 			string errorMessage = "address range is ";
 			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
@@ -137,11 +172,235 @@ private:
 		outFile.close();
 	}
 
-	std::string IntToHexUppercaseString(int data)
+	bool getDataFromBuffer(const CommandSet& cmd, int& data)
+	{
+		vector<CommandSet> cmdset = getCommandList();
+		for (vector<CommandSet>::iterator it = cmdset.end(); it != cmdset.begin();)
+		//for (auto& cmd : cmdset)
+		{
+			it--;
+			if (it->cmdOpcode == SSD::COMMAND_WRITE && it->address == cmd.address)
+			{
+				data = it->data;
+				writeResult(IntToHexUppercaseString(data));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	int getDataFromNand(int address)
+	{
+		checkDataInit();
+		vector<string> ssdData = getSsdData();
+		writeResult(ssdData[address]);
+
+		return stoul(ssdData[address], nullptr, 16);
+	}
+
+	string IntToHexUppercaseString(int data)
 	{
 		std::stringstream dataToHex;
 		dataToHex << "0x" << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << data;
 		return dataToHex.str();
+	}
+
+	bool mergeErase(vector<CommandSet> &commands) {
+		vector<Range> ranges;
+
+		bool isMerged = false;
+
+		for (const auto& cmd : commands)
+		{
+			if (cmd.cmdOpcode == COMMAND_ERASE)
+			{
+				ranges.push_back({ cmd.address, cmd.address + cmd.size - 1 });
+			}
+		}
+		if (ranges.size() <= 1)
+			return isMerged;
+
+		vector<Range> result;
+		sort(ranges.begin(), ranges.end());
+
+		result.push_back(ranges[0]);
+		for (size_t i = 1; i < ranges.size(); ++i) {
+			if (result.back().second >= ranges[i].first - 1) {
+				result.back().second = max(result.back().second, ranges[i].second);
+			}
+			else {
+				result.push_back(ranges[i]);
+			}
+		}
+		for (auto cmd = commands.begin(); cmd != commands.end();)
+		{
+			bool erasedRange = false;
+			bool erasedCmd = false;
+			if (cmd->cmdOpcode == COMMAND_ERASE)
+			{
+				for (std::vector<Range>::iterator range = result.begin(); range != result.end(); )
+				{
+					if (cmd->address == range->first)
+					{
+						cmd->size = range->second - range->first + 1;
+						range = result.erase(range);
+						erasedRange = true;
+					}
+					else
+					{
+						++range;
+						
+					}
+				}
+				if (erasedRange == false)
+				{
+					cmd = commands.erase(cmd);
+					erasedCmd = true;
+					isMerged = true;
+				}
+			}
+
+			if (erasedCmd == false)
+				++cmd;
+
+		}
+
+		return isMerged;
+	}
+
+	bool mergeWriteAndThenErase(vector<CommandSet>& commands) {
+
+		bool isMerged = false;
+
+		for (vector<CommandSet>::iterator cmd = std::prev(commands.end()); cmd > commands.begin();)
+		{
+			bool IsErasedWrite = false;
+			if (cmd->cmdOpcode == COMMAND_ERASE || cmd->cmdOpcode == COMMAND_WRITE)
+			{
+				int beginAddress = cmd->address;
+				int endAddress;
+				if (cmd->cmdOpcode == COMMAND_ERASE) endAddress = cmd->address + cmd->size - 1;
+				else if (cmd->cmdOpcode == COMMAND_WRITE) endAddress = cmd->address;
+
+				for (vector<CommandSet>::iterator cmdUnder = std::prev(cmd); cmdUnder >= commands.begin();)
+				{
+					if (cmdUnder->cmdOpcode == COMMAND_WRITE)
+					{
+						if (beginAddress <= cmdUnder->address && cmdUnder->address <= endAddress)
+						{
+							cmdUnder = commands.erase(cmdUnder);
+							IsErasedWrite = true;
+							isMerged = true;
+						}
+					}
+					
+					if (cmdUnder == commands.begin())
+						break;
+					--cmdUnder;
+				}
+			}
+
+	
+			if (IsErasedWrite == false)
+			{ 
+				--cmd;
+			}
+			else
+			{
+				/*
+				After an iterator becomes invalidated, restart the loop operation from the beginning to obtain valid iterators.
+				While this approach ensures safe access, it may impact performance.
+				*/
+				cmd = std::prev(commands.end());
+			}
+		}
+		return isMerged;
+	}
+
+	void writeCommand(vector<CommandSet> cmdlist) {
+		ofstream cmdFile(CMDFILE);
+		if (!cmdFile.is_open()) {
+			throw ssd_exception("Cannot Open File");
+		}
+
+		for (CommandSet tempCmd : cmdlist) {
+			string cmdStr;
+
+			cmdStr = to_string(tempCmd.cmdOpcode) + " ";
+			cmdStr += to_string(tempCmd.address) + " ";
+			cmdStr += to_string(tempCmd.data) + " ";
+			cmdStr += to_string(tempCmd.size);
+			cmdFile << cmdStr << endl;
+		}
+		cmdFile.close();
+	}
+
+	void cmdWrite(CommandSet cmd) {
+		vector<string> ssdData;
+		int address = cmd.address;
+		int data = cmd.data;
+
+		checkDataInit();
+		ssdData = getSsdData();
+		ssdData[address] = IntToHexUppercaseString(data);
+		setSsdData(ssdData);
+	}
+
+	void cmdErase(CommandSet cmd) {
+		vector<string> ssdData;
+		int address = cmd.address;
+		int size = cmd.size;
+
+		checkDataInit();
+		ssdData = getSsdData();
+		for (int i = address; i < address + size; i++) {
+			ssdData[address] = IntToHexUppercaseString(0);
+		}
+		setSsdData(ssdData);
+	}
+
+	void setCommandList(CommandSet cmd) {
+		vector<CommandSet> cmdlist;
+
+		cmdlist = getCommandList();
+		cmdlist.push_back(cmd);
+
+		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
+		{
+			mergeErase(cmdlist);
+		}
+
+		if (cmd.cmdOpcode == SSD::COMMAND_ERASE || cmd.cmdOpcode == SSD::COMMAND_WRITE)
+		{
+			mergeWriteAndThenErase(cmdlist);
+		}
+
+		writeCommand(cmdlist);
+		if (cmdlist.size() >= 10) {
+			flush();
+		}
+	}
+
+	vector<CommandSet> getCommandList() {
+		ifstream cmdFile(CMDFILE);
+		vector<CommandSet> cmdlist;
+
+		if (!cmdFile.good()) {
+			cmdFile.close();
+			return cmdlist;
+		}
+
+		string line;
+		while (getline(cmdFile, line)) {
+			istringstream iss(line);
+			CommandSet tempCmd;
+
+			iss >> tempCmd.cmdOpcode >> tempCmd.address >> tempCmd.data >> tempCmd.size;
+			cmdlist.push_back(tempCmd);
+		}
+		cmdFile.close();
+
+		return cmdlist;
 	}
 
 };
