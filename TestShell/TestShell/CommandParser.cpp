@@ -17,6 +17,10 @@ public:
 	void setResult(vector<string> result) {
 		this->result = result;
 	}
+
+	vector<string> getResult() {
+		return result;
+	}
 	
 	void command_parse(string cmd_line) {
 		if (cmd_line == "")
