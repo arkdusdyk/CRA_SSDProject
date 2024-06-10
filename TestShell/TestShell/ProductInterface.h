@@ -23,16 +23,18 @@ public:
 	virtual void Write(int addr, string value) override {		
 		string cmd = curPath;
 		cmd.append(mExecuteName + " W " + std::to_string(addr) + " " + value);
-		if (system(cmd.c_str()) != 0)
-			cout << "실행파일을 실행하지 못했습니다." << endl;
+		int res = system(cmd.c_str());
+		if (res != 0)
+			cout << "실행파일을 실행하지 못했습니다. : " << res << " - " << cmd << endl;
 		
 	}
 
 	virtual string Read(int addr) override {
 		string cmd = curPath;
 		cmd.append(mExecuteName + " R " + std::to_string(addr));
-		if (system(cmd.c_str()) != 0)
-			cout << "실행파일을 실행하지 못했습니다." << endl;
+		int res = system(cmd.c_str());
+		if (res != 0)
+			cout << "실행파일을 실행하지 못했습니다. : "<< res << " - " << cmd << endl;
 
 		ifstream readFile;
 		string result;
@@ -45,7 +47,7 @@ public:
 		}
 		else
 		{
-			cout << "결과 파일을 읽지 못했습니다." << endl;
+			cout << "결과 파일을 읽지 못했습니다. : " << cmd << endl;
 		}
 		readFile.close();
 		return result;
@@ -54,14 +56,15 @@ public:
 	virtual void Erase(int addr, int size) override {
 		string cmd = curPath;
 		cmd.append(mExecuteName + " E " + std::to_string(addr) + " " + std::to_string(size));
-		if (system(cmd.c_str()) != 0)
-			cout << "실행파일을 실행하지 못했습니다." << endl;
+		int res = system(cmd.c_str());
+		if (res != 0)
+			cout << "실행파일을 실행하지 못했습니다. : " << res << " - " << cmd << endl;
 	}
 private:
 	char curPath[256];
 
 	string mReadFileName = "result.txt";
-	string mExecuteName = "\\..\\..\\SSD\\x64\\Debug\\ssd.exe";
+	string mExecuteName = "\\ssd.exe";
 };
 
 class createProductFactory {
