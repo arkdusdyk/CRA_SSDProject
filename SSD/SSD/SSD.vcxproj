@@ -72,6 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>ssd</TargetName>
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\Logger\Include</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,10 +109,15 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>..\..\Logger\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>..\..\Logger\Lib\LoggerLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetFileName)" "$(SolutionDir)..\TestShell\x64\Debug";</Command>
@@ -141,10 +147,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Read.cpp" />
     <ClCompile Include="storage.cpp" />
+    <ClCompile Include="util.cpp" />
     <ClCompile Include="Write.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Logger\Include\Logger.h" />
     <ClInclude Include="ssdexcept.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

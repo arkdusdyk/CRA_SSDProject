@@ -40,6 +40,7 @@ protected:
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = "0xAABBCCDD";
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
+	Logger& logger = Logger::GetInstance();
 	bool isRunningTestScenario = false;
 	Logger& logger = Logger::GetInstance();
 	eLoggingOpt logOption = eLoggingOpt::ALL_PRINT;

@@ -133,6 +133,7 @@
     <ClCompile Include="CommandParser.cpp" />
     <ClCompile Include="EraseCommand.cpp" />
     <ClCompile Include="EraseRangeCommand.cpp" />
+    <ClCompile Include="FlushCommand.cpp" />
     <ClCompile Include="FullReadCommand.cpp" />
     <ClCompile Include="FullWriteCommand.cpp" />
     <ClCompile Include="HelpCommand.cpp" />
@@ -142,11 +143,18 @@
     <ClCompile Include="ProductInterface.h" />
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Runner.cpp" />
+    <ClCompile Include="TestCase.cpp" />
+    <ClCompile Include="TestApp1Command.cpp" />
+    <ClCompile Include="TestApp2Command.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="run_list.lst" />
+    <None Include="..\x64\Debug\run_list.lst" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="TestCase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
