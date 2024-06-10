@@ -34,9 +34,12 @@ private:
 	tm* now_time;
 	string setPaddingString(std::string const& str);
 
-	void ChangeExt(char* path, char* newext);
-
+	void pressLogFile(string prevFilename);
 
 	void printConsole(const string& log);
-	void printFile(const string& log);
+	void writeLogFile(const string& log);
+	void check_Filesize(std::string& logPath, std::string& logDir);
+	void make_UntillLog(std::string& logDir, std::string& logPath);
+	void press_PrevUntillLog(std::string& logDir);
+	void check_LogDir(std::string& logDir);
 };
