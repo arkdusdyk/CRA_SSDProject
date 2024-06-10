@@ -5,6 +5,7 @@
 #include "CommandParser.cpp"
 #include "ProductInterface.h"
 #include "TestShell_Exception.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -33,4 +34,5 @@ protected:
 	const string TEST_PATTERN_TESTAPP1 = "0xAABBCCDD";
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
 	bool running = false;
+	Logger& logger = Logger::GetInstance();
 };

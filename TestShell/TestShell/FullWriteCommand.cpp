@@ -11,8 +11,10 @@ public:
 
 	void execute(CommandParser& cp, IProduct* product) override
 	{
+		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Full Write SSD Data");
 		for (int lba = 0; lba < 100; lba++) {
 			product->Write(lba, cp.data);
+			logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "[LBA] Data  : [" + to_string(lba) + "] " + cp.data);
 		}
 	}
 
