@@ -39,5 +39,5 @@ public:
 private:
 	IProduct* product;
 	std::vector<std::unique_ptr<ICommand>> commands;
-	Logger logger;
+	Logger& logger = Logger::GetInstance();
 };
