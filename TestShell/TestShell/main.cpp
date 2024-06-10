@@ -47,8 +47,7 @@ int main(int argc, char* argv[]) {
 				}
 			}
 			catch (exception) {
-				cout << "INVALID COMMAND\n";
-				logger.write_Log(eLoggingOpt::ONLY_FILE, "main", "INVALID COMMAND");
+				logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "INVALID COMMA");
 			}
 		}
 	}
@@ -58,18 +57,18 @@ int main(int argc, char* argv[]) {
 		bool run_flag = runner.readScenario(argv[1]);
 		invoker.setRun(run_flag);
 		if (run_flag == false)
-			cout << "File Open Error\n";
+			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "File Open Error");
 		else {
 			for (auto script : runner.scripts) {
 				try {
-					cout << script << " --- Run...";
+					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, script + " --- Run...");
 					cp.command_parse(script);
 					transform(script.begin(), script.end(), script.begin(), ::toupper);
 					invoker.execute(cp);
-					cout << "Pass" << "\n";
+					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "Pass");
 				}
 				catch (exception) {
-					cout << "FAIL!" << "\n";
+					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "FAIL!");
 					break;
 				}
 			}
