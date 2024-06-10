@@ -15,11 +15,10 @@ public:
 		checkInvalid_LBA(cp.lba);
 		string result = product->Read(cp.lba);
 		if (isRunningTestScenario == false)
-			cout << result <<  endl;
+			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "[LBA] Data : [" + to_string(cp.lba) + "] " + result);
 
 		results.push_back(result);
 		cp.setResult(results);
-		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Read Data (LBA) : " + result + "(" + to_string(cp.lba) + ")");
 	}
 
 private:

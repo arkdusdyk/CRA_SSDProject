@@ -15,6 +15,7 @@ public:
 		checkInvalid_LBA(cp.lba);
 		checkInvalid_LBA(cp.endLba);
 
+		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Erase Range " + to_string(cp.lba) + " ~ " + to_string(cp.endLba - 1));
 		int tmp = cp.endLba - cp.lba;
 		for (int i = 0; i < ((cp.endLba - cp.lba) / 10 + 1); i++) {
 			if (tmp >= 10) {
