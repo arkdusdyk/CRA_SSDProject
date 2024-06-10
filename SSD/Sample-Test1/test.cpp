@@ -262,3 +262,14 @@ TEST_F(SSDFIxture, CommandInvokerWriteAndErase) {
     expectedData = 0x00000000;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
+
+TEST_F(SSDFIxture, CommandInvokerWriteFlushErase) {
+    makeWriteCmd("3", "0x00000003");
+    makeFlushCmd();
+
+    makeEraseCmd("0", "10");
+    makeReadCmd("3");
+
+    int expectedData = 0x00000000;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
+}
