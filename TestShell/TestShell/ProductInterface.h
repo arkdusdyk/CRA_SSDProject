@@ -26,7 +26,7 @@ public:
 		int res = system(cmd.c_str());
 		if (res != 0) {
 			cout << "실행파일을 실행하지 못했습니다. : " << res << " - " << cmd << endl;
-			throw exception("Can not find file!");
+			throw exception("Can not find Execution File!");
 		}
 		
 	}
@@ -37,7 +37,7 @@ public:
 		int res = system(cmd.c_str());
 		if (res != 0) {
 			cout << "실행파일을 실행하지 못했습니다. : " << res << " - " << cmd << endl;
-			throw exception("Can not find file!");
+			throw exception("Can not find Execution File!");
 		}
 
 		ifstream readFile;
@@ -52,7 +52,7 @@ public:
 		else
 		{
 			cout << "결과 파일을 읽지 못했습니다. : " << cmd << endl;
-			throw exception("Can not find file!");
+			throw exception("Can not find Result File!");
 		}
 		readFile.close();
 		return result;
