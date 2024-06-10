@@ -9,24 +9,17 @@
 #include <filesystem>
 #include <io.h>
 
+void Logger::write_Log_NoEndl(eLoggingOpt loggingOption, string sfunctionName, string log_detail) {
+	string log = getCurrentTimetoString() + " " + setPaddingString(sfunctionName + "()") + " : " + log_detail;
+	start_Logging(loggingOption, log);
+}
+
 void Logger::write_Log(eLoggingOpt loggingOption, string sfunctionName, string log_detail) {
 	string log = getCurrentTimetoString() + " " + setPaddingString(sfunctionName + "()") + " : " + log_detail;
-
-	switch (loggingOption)
-	{
-	case eLoggingOpt::ALL_PRINT:
-		printConsole(log);
-		writeLogFile(log);
-		break;
-	case eLoggingOpt::ONLY_FILE:
-		writeLogFile(log);
-		break;
-	case eLoggingOpt::ONLY_CONSOLE:
-		printConsole(log);
-		break;
-	default:
-		break;
-	}
+	if (log_detail[log_detail.size()] != '\n')
+		log = log + "\n";
+	
+	start_Logging(loggingOption, log);
 }
 
 string Logger::getCurrentTimetoString() {
@@ -52,8 +45,27 @@ string Logger::setPaddingString(const string& str)
 	return oss.str();
 }
 
+void Logger::start_Logging(eLoggingOpt loggingOption, std::string& log)
+{
+	switch (loggingOption)
+	{
+	case eLoggingOpt::ALL_PRINT:
+		printConsole(log);
+		writeLogFile(log);
+		break;
+	case eLoggingOpt::ONLY_FILE:
+		writeLogFile(log);
+		break;
+	case eLoggingOpt::ONLY_CONSOLE:
+		printConsole(log);
+		break;
+	default:
+		break;
+	}
+}
+
 void Logger::printConsole(const string& log) {
-	cout << log << endl;
+	cout << log;
 }
 
 void Logger::writeLogFile(const string& log) {
@@ -65,7 +77,7 @@ void Logger::writeLogFile(const string& log) {
 	string logPath = logDir + "\\latest.log";
 	ofstream logFile(logPath, ios::app);
 	if (logFile.is_open()) {
-		logFile << log << endl;
+		logFile << log;
 	}
 	logFile.close();
 
