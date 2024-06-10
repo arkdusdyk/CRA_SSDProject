@@ -36,7 +36,6 @@ private:
 
 	void pressLogFile(string prevFilename);
 
-
 	void printConsole(const string& log);
 	void writeLogFile(const string& log);
 	void check_Filesize(std::string& logPath, std::string& logDir);
