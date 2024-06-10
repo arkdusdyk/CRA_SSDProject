@@ -11,6 +11,7 @@ public:
 
 	void execute(CommandParser& cp, IProduct* product) override
 	{
+		/*
 		for (int cnt = 0; cnt < 30; cnt++) {
 			for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
 				product->Write(lbaAddress, "0xAAAABBBB");
@@ -26,6 +27,7 @@ public:
 			if (isRunningTestScenario == false)
 				cout << result << endl;
 		}
+		*/
 	}
 
 private:

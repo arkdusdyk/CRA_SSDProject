@@ -3,17 +3,29 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <iomanip>
 #include <stdexcept>
 #include <vector>
 #include <algorithm>
 #include <memory>
 #include <windows.h>
 
+#include "Logger.h"
+
 #include "ssdexcept.h"
+#include "util.h"
 
 using namespace std;
+using util::IntToHexUppercaseString;
+
 using Range = std::pair<int, int>;
+
+#define DEBUG (0)
+#if DEBUG == 1
+	constexpr eLoggingOpt LOGTYPE = eLoggingOpt::ALL_PRINT;
+#else
+	constexpr eLoggingOpt LOGTYPE = eLoggingOpt::ONLY_FILE;
+#endif
+#define LOGTAG string("STORAGE::")+util::GetClassMethodName(__FUNCSIG__)
 
 struct CommandSet
 {
@@ -45,6 +57,7 @@ public:
 		CommandSet cmd = { COMMAND_WRITE, address, data };
 
 		checkingValidLba(address, 1);
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Write(LBA: ") + to_string(address) + ", Data: " + IntToHexUppercaseString(data) + ") (Buffering)");
 		setCommandList(cmd);
 	}
 
@@ -58,9 +71,13 @@ public:
 		bool cachehit = getDataFromBuffer(cmd, data);
 		if (cachehit)
 		{
+			Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Read(LBA: ")+ to_string(address) +"): Data: " + IntToHexUppercaseString(data) + " From Buffer");
 			return data;
 		}
-		return getDataFromNand(address);
+
+		data = getDataFromNand(address);
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Read(LBA: ") + to_string(address) + "): Data: " + IntToHexUppercaseString(data) + " From Nand");
+		return data;
 	}
 
 	void erase(int address, int size) override {
@@ -69,12 +86,15 @@ public:
 		checkingValidLba(address, size);
 		checkingEraseSize(size);
 
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Erase(LBA: ") + to_string(address) + " ~ " + to_string(address+size-1)+ ") (Buffering)");
 		setCommandList(cmd);
 	}
 
 	void flush() override {
 		vector<CommandSet> cmdset;
 		cmdset = getCommandList();
+
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Flush(Command Count: ") + to_string(cmdset.size()));
 
 		for (CommandSet cmd : cmdset) {
 			switch (cmd.cmdOpcode) {
@@ -226,13 +246,6 @@ private:
 		return stoul(ssdData[address], nullptr, 16);
 	}
 
-	string IntToHexUppercaseString(int data)
-	{
-		std::stringstream dataToHex;
-		dataToHex << "0x" << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << data;
-		return dataToHex.str();
-	}
-
 	bool mergeErase(vector<CommandSet> &commands) {
 		vector<Range> ranges;
 
@@ -367,6 +380,8 @@ private:
 		vector<string> ssdData;
 		int address = cmd.address;
 		int data = cmd.data;
+		
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Write(LBA: ") + to_string(cmd.address) + ", Data: " + IntToHexUppercaseString(data) + ") (To Nand)");
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -378,6 +393,8 @@ private:
 		vector<string> ssdData;
 		int address = cmd.address;
 		int size = cmd.size;
+
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Erase(LBA: ") + to_string(cmd.address) + " ~ " + to_string(cmd.address + cmd.size - 1) + ") (To Nand)");
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -405,6 +422,7 @@ private:
 
 		writeCommand(cmdlist);
 		if (cmdlist.size() >= 10) {
+			Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Command Buffering Auto Flush"));
 			flush();
 		}
 	}

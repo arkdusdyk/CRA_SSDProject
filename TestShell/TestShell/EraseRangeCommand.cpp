@@ -21,7 +21,7 @@ public:
 				product->Erase(cp.lba + i * 10, 10);
 				tmp -= 10;
 			}
-			else {
+			else if (tmp != 0) {
 				product->Erase(cp.lba + i * 10, tmp);
 			}
 		}
