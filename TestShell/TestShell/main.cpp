@@ -12,6 +12,7 @@
 #include "EraseRangeCommand.cpp"
 #include "FullReadCommand.cpp"
 #include "FullWriteCommand.cpp"
+#include "FlushCommand.cpp"
 
 using namespace std;
 
@@ -27,6 +28,7 @@ int main(int argc, char* argv[]) {
 	invoker.addCommand(move(make_unique<EraseRangeCommand>()));
 	invoker.addCommand(move(make_unique<FullReadCommand>()));
 	invoker.addCommand(move(make_unique<FullWriteCommand>()));
+	invoker.addCommand(move(make_unique<FlushCommand>()));
 
 	CommandParser cp;
 	Logger& logger = Logger::GetInstance();
