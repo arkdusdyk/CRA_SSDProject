@@ -9,17 +9,26 @@
 #include <filesystem>
 #include <io.h>
 
-void Logger::write_Log_NoEndl(eLoggingOpt loggingOption, string sfunctionName, string log_detail) {
-	string log = getCurrentTimetoString() + " " + setPaddingString(sfunctionName + "()") + " : " + log_detail;
-	start_Logging(loggingOption, log);
-}
-
-void Logger::write_Log(eLoggingOpt loggingOption, string sfunctionName, string log_detail) {
-	string log = getCurrentTimetoString() + " " + setPaddingString(sfunctionName + "()") + " : " + log_detail;
-	if (log_detail[log_detail.size()] != '\n')
+void Logger::write_Log(eLoggingOpt loggingOption, string functionName, string log_detail, bool addEndl) {
+	string log = getCurrentTimetoString() + " " + setPaddingString(functionName + "()") + " : " + log_detail;
+	if (addEndl && log_detail[log_detail.size()] != '\n')
 		log = log + "\n";
-	
-	start_Logging(loggingOption, log);
+
+	switch (loggingOption)
+	{
+	case eLoggingOpt::ALL_PRINT:
+		printConsole(log);
+		writeLogFile(log);
+		break;
+	case eLoggingOpt::ONLY_FILE:
+		writeLogFile(log);
+		break;
+	case eLoggingOpt::ONLY_CONSOLE:
+		printConsole(log);
+		break;
+	default:
+		break;
+	}
 }
 
 string Logger::getCurrentTimetoString() {
@@ -43,25 +52,6 @@ string Logger::setPaddingString(const string& str)
 	std::ostringstream oss;
 	oss << left << setfill(' ') << setw(30) << str;
 	return oss.str();
-}
-
-void Logger::start_Logging(eLoggingOpt loggingOption, std::string& log)
-{
-	switch (loggingOption)
-	{
-	case eLoggingOpt::ALL_PRINT:
-		printConsole(log);
-		writeLogFile(log);
-		break;
-	case eLoggingOpt::ONLY_FILE:
-		writeLogFile(log);
-		break;
-	case eLoggingOpt::ONLY_CONSOLE:
-		printConsole(log);
-		break;
-	default:
-		break;
-	}
 }
 
 void Logger::printConsole(const string& log) {

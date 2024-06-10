@@ -21,8 +21,7 @@ public:
 		static Logger instance;
 		return instance;
 	}
-	void write_Log(eLoggingOpt loggingOption, string functionName, string log);
-	void write_Log_NoEndl(eLoggingOpt loggingOption, string functionName, string log);
+	void write_Log(eLoggingOpt loggingOption, string functionName, string log_detail, bool addEndl = true);
 private:
 	tm* now_time;
 
@@ -36,8 +35,6 @@ private:
 	string getCurrentTimetoString();
 	string setPaddingString(std::string const& str);
 
-	void start_Logging(eLoggingOpt loggingOption, std::string& log);
-
 	void printConsole(const string& log);
 	void writeLogFile(const string& log);
 
@@ -49,8 +46,4 @@ private:
 	void pressLogFile(string prevFilename);
 
 	void make_UntillLog(std::string& logDir, std::string& logPath);
-	
-	
-
-	
 };
