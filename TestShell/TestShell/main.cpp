@@ -12,11 +12,12 @@
 #include "EraseRangeCommand.cpp"
 #include "FullReadCommand.cpp"
 #include "FullWriteCommand.cpp"
+#include "TestCase.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-	string input_cmd;
+;	string input_cmd;
 
 	CommandInvoker invoker;
 	invoker.createProduct("SSD");
@@ -60,17 +61,9 @@ int main(int argc, char* argv[]) {
 			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "File Open Error");
 		else {
 			for (auto script : runner.scripts) {
-				try {
-					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, script + " --- Run...");
-					cp.command_parse(script);
-					transform(script.begin(), script.end(), script.begin(), ::toupper);
-					invoker.execute(cp);
-					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "Pass");
-				}
-				catch (exception) {
-					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "FAIL!");
-					break;
-				}
+				TestCase tc(script);
+				logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, script + " --- Run...");
+				if (!tc.execute(cp, invoker)) return 0;
 			}
 		}
 	}

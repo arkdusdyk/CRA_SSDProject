@@ -60,10 +60,21 @@
     <ClCompile Include="WriteCommand.cpp">
       <Filter>소스 파일\Command</Filter>
     </ClCompile>
+    <ClCompile Include="TestCase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="run_list.lst">
       <Filter>리소스 파일</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestCase.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

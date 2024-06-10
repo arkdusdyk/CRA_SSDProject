@@ -142,11 +142,16 @@
     <ClCompile Include="ProductInterface.h" />
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Runner.cpp" />
+    <ClCompile Include="TestCase.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="run_list.lst" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="TestCase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -11,7 +11,8 @@ public:
 	vector<string> scripts;
 
 	bool readScenario(string file_name) {
-		filename = file_name;
+		filename = "testsuites/";
+		filename.append(file_name);
 		ifstream inFile(filename);
 
 		if (inFile.fail())
