@@ -73,7 +73,6 @@ int main(int argc, char* argv[]) {
 		else {
 			for (auto script : runner.scripts) {
 				TestCase tc(script);
-				logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, script + " --- Run...");
 				if (!tc.execute(cp, invoker)) return 0;
 			}
 		}
