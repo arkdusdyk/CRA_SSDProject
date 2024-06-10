@@ -16,6 +16,8 @@
 #include "TestCase.h"
 #include "TestApp1Command.cpp"
 #include "TestApp2Command.cpp"
+#include "FullRead10AndCompare.cpp"
+#include "Write10AndCompare.cpp"
 
 using namespace std;
 
@@ -34,6 +36,8 @@ int main(int argc, char* argv[]) {
 	invoker.addCommand(move(make_unique<FlushCommand>()));
 	invoker.addCommand(move(make_unique<TestApp1Command>()));
 	invoker.addCommand(move(make_unique<TestApp2Command>()));
+	//invoker.addCommand(move(make_unique<FullRead10AndCompare>()));
+	//invoker.addCommand(move(make_unique<Write10AndCompare>()));
 
 
 	CommandParser cp;

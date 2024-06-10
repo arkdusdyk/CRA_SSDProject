@@ -147,6 +147,7 @@
     <ClCompile Include="TestApp1Command.cpp" />
     <ClCompile Include="TestApp2Command.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
+    <ClCompile Include="Write10AndCompare.cpp" />
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
