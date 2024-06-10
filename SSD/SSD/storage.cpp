@@ -185,6 +185,14 @@ private:
 				writeResult(IntToHexUppercaseString(data));
 				return true;
 			}
+			int startlba = it->address;
+			int endlba = it->address + it->size - 1;
+			if (it->cmdOpcode == SSD::COMMAND_ERASE && (startlba <= cmd.address && cmd.address <= endlba))
+			{
+				data = it->data;
+				writeResult(IntToHexUppercaseString(CLEAN_PAGE_DATA));
+				return true;
+			}
 		}
 		return false;
 	}
@@ -354,7 +362,7 @@ private:
 		checkDataInit();
 		ssdData = getSsdData();
 		for (int i = address; i < address + size; i++) {
-			ssdData[i] = IntToHexUppercaseString(0);
+			ssdData[i] = IntToHexUppercaseString(CLEAN_PAGE_DATA);
 		}
 		setSsdData(ssdData);
 	}
