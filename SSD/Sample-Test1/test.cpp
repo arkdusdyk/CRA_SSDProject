@@ -51,6 +51,43 @@ public:
 
         return std::stoul(line, nullptr, 16);
     }
+
+    int makeReadCmd(char* address) {
+        char* argv[3];
+
+        argv[0] = "ssd.exe";
+        argv[1] = "R";
+        argv[2] = address;
+        return invoker.executeCommands(3, argv);
+    }
+
+    int makeWriteCmd(char* address, char* value) {
+        char* argv[4];
+
+        argv[0] = "ssd.exe";
+        argv[1] = "W";
+        argv[2] = address;
+        argv[3] = value;
+        return invoker.executeCommands(4, argv);
+    }
+
+    int makeEraseCmd(char* address, char* size) {
+        char* argv[4];
+
+        argv[0] = "ssd.exe";
+        argv[1] = "E";
+        argv[2] = address;
+        argv[3] = size;
+        return invoker.executeCommands(4, argv);
+    }
+
+    int  makeFlushCmd() {
+        char* argv[2];
+
+        argv[0] = "ssd.exe";
+        argv[1] = "F";
+        return invoker.executeCommands(2, argv);
+    }
 };
 
 TEST_F(SSDFIxture, SsdWrite0) {
@@ -136,61 +173,42 @@ TEST_F(SSDFIxture, CommandInvokerLessArgument) {
 }
 
 TEST_F(SSDFIxture, CommandInvokerWrite0) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef"};
-    int ret = invoker.executeCommands(argc, argv);
+    int ret = makeWriteCmd("0", "0xdeadbeef");
 
     EXPECT_THAT(ret, testing::Eq(ICommand::COMMAND_VALIDATION_SUCCESS));
 }
 
 TEST_F(SSDFIxture, CommandInvokerRead0) {
-    int argc = 3;
-    char* argv[] = { "ssd.exe", "R", "0"};
-    int ret = invoker.executeCommands(argc, argv);
-   
     int expectedData = 0x00000000;
+
+    makeReadCmd("0");
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
 
 TEST_F(SSDFIxture, CommandInvokerWrite100) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "100", "0xdeadbeef" };
-
     EXPECT_THROW({
-         invoker.executeCommands(argc, argv);
+         makeWriteCmd("100", "0xdeadbeef");
         }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, CommandInvokerRead100) {
-    int argc = 3;
-    char* argv[] = { "ssd.exe", "R", "100"};
 
     EXPECT_THROW({
-         invoker.executeCommands(argc, argv);
+          makeReadCmd("100");
         }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, CommandInvokerWriteRead0Verify) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef" };
-    invoker.executeCommands(argc, argv);
-    argc = 3;
-    argv[1] = "R";
-    argv[3] = "";
-    int ret = invoker.executeCommands(argc, argv);
+    makeWriteCmd("0", "0xdeadbeef");
+    makeReadCmd("0");
 
     int expectedData = 0xdeadbeef;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
 
 TEST_F(SSDFIxture, CommandInvokerWriteRead50Verify) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "50", "0xdeadbeef" };
-    invoker.executeCommands(argc, argv);
-    argc = 3;
-    argv[1] = "R";
-    argv[3] = "";
-    int ret = invoker.executeCommands(argc, argv);
+    makeWriteCmd("50", "0xdeadbeef");
+    makeReadCmd("50");
 
     int expectedData = 0xdeadbeef;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
@@ -198,18 +216,14 @@ TEST_F(SSDFIxture, CommandInvokerWriteRead50Verify) {
 
 
 TEST_F(SSDFIxture, CommandInvokerWriteInvalidData) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "0", "0xzzzzzzzz" };
     EXPECT_THROW({
-         invoker.executeCommands(argc, argv);
+         makeWriteCmd("0", "0xzzzzzzzz");
         }, ssd_exception);
 }
 
 TEST_F(SSDFIxture, CommandInvokerWriteInvalidDataLong) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "50", "0xdeadbeefffff" };
     EXPECT_THROW({
-         invoker.executeCommands(argc, argv);
+         makeWriteCmd("0", "0xdeadbeefffff");
         }, ssd_exception);
 }
 
@@ -222,49 +236,29 @@ TEST_F(SSDFIxture, CommandInvokerReadInvalidAddressFormat0x0) {
 }
 
 TEST_F(SSDFIxture, CommandInvokerWriteReadEraseReadVerify) {
-    int argc = 4;
-    char* argv[] = { "ssd.exe", "W", "0", "0xdeadbeef" };
-    invoker.executeCommands(argc, argv);
-    argv[1] = "R";
-    argv[3] = "";
-    int ret = invoker.executeCommands(3, argv);
+    makeWriteCmd("0", "0xdeadbeef");
+    makeReadCmd("0");
 
     int expectedData = 0xdeadbeef;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
 
-    argv[1] = "E";
-    argv[2] = "0";
-    argv[3] = "1";
-    ret = invoker.executeCommands(4, argv);
-
-    argv[1] = "R";
-    argv[3] = "";
-    ret = invoker.executeCommands(3, argv);
+    makeEraseCmd("0", "1");
+    makeReadCmd("0");
 
     expectedData = 0x00000000;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
 }
 
 TEST_F(SSDFIxture, CommandInvokerWriteAndErase) {
-    char* argv[] = { "ssd.exe", "W", "10", "0xdeadbeef" };
-    invoker.executeCommands(4, argv);
+    makeWriteCmd("10", "0xdeadbeef");
+    makeWriteCmd("10", "0x00000001");
+    makeReadCmd("10");
 
-    char* argv1[] = { "ssd.exe", "W", "10", "0x00000001" };
-    invoker.executeCommands(4, argv1);
-
-    char* argv1_1[] = { "ssd.exe", "R", "10" };
-    invoker.executeCommands(3, argv1_1);
     int expectedData = 0x00000001;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
  
-
-    char* argv2[] = { "ssd.exe", "E", "9", "3" };
-    invoker.executeCommands(4, argv2);
-
-    char* argv2_1[] = { "ssd.exe", "R", "10" };
-    invoker.executeCommands(3, argv2_1);
+    makeEraseCmd("9", "3");
+    makeReadCmd("10");
     expectedData = 0x00000000;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
-
-    // Expected cmdlist has only Erase, 9, 3
 }
