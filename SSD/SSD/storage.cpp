@@ -26,6 +26,7 @@ using Range = std::pair<int, int>;
 	constexpr eLoggingOpt LOGTYPE = eLoggingOpt::ONLY_FILE;
 #endif
 #define LOGTAG string("STORAGE::")+util::GetClassMethodName(__FUNCSIG__)
+#define LOGGER(x) Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, x)
 
 struct CommandSet
 {
@@ -57,9 +58,10 @@ public:
 		CommandSet cmd = { COMMAND_WRITE, address, data };
 
 		checkingValidLba(address, 1);
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Write(LBA: ") + to_string(address) + ", Data: " + IntToHexUppercaseString(data) + ") (Buffering)");
+		LOGGER("[LBA] Data : [" + to_string(address) + "] " + IntToHexUppercaseString(data) + " (Buffering)");
+
 		setCommandList(cmd);
-	}
+	} 
 
 	int read(int address) override {
 		checkingValidLba(address, 1);
@@ -71,12 +73,12 @@ public:
 		bool cachehit = getDataFromBuffer(cmd, data);
 		if (cachehit)
 		{
-			Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Read(LBA: ")+ to_string(address) +"): Data: " + IntToHexUppercaseString(data) + " From Buffer");
+			LOGGER("[LBA] Data : [" + to_string(address) + "] " + IntToHexUppercaseString(data) + " (From Buffer)");
 			return data;
 		}
 
 		data = getDataFromNand(address);
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Read(LBA: ") + to_string(address) + "): Data: " + IntToHexUppercaseString(data) + " From Nand");
+		LOGGER("[LBA] Data : [" + to_string(address) + "] " + IntToHexUppercaseString(data) + " (From Nand)");
 		return data;
 	}
 
@@ -86,15 +88,13 @@ public:
 		checkingValidLba(address, size);
 		checkingEraseSize(size);
 
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Erase(LBA: ") + to_string(address) + " ~ " + to_string(address+size-1)+ ") (Buffering)");
+		LOGGER("[Start] ~ [End] : [" + to_string(address) + "] ~ [" + to_string(address + size - 1) + "] (Buffering)");
 		setCommandList(cmd);
 	}
 
 	void flush() override {
 		vector<CommandSet> cmdset;
 		cmdset = getCommandList();
-
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Flush(Command Count: ") + to_string(cmdset.size()));
 
 		for (CommandSet cmd : cmdset) {
 			switch (cmd.cmdOpcode) {
@@ -110,6 +110,8 @@ public:
 			}
 		}
 		DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
+
+		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Complete Flush (") + to_string(cmdset.size()) + " Commands)");
 	}
 
 private:
