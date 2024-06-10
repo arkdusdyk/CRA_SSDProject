@@ -11,6 +11,7 @@ public:
 
 	void execute(CommandParser& cp, IProduct* product) override
 	{
+		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Print Help Text.");
 		for (string help : helpText) {
 			cout << help << endl;
 		}

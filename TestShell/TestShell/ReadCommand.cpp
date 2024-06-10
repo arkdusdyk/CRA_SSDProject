@@ -15,6 +15,7 @@ public:
 		string result = product->Read(cp.lba);
 		if (isRunningTestScenario == false)
 			cout << result <<  endl;
+		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Read Data (LBA) : " + result + "(" + to_string(cp.lba) + ")");
 	}
 
 private:
