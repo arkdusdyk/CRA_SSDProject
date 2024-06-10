@@ -354,7 +354,7 @@ private:
 		checkDataInit();
 		ssdData = getSsdData();
 		for (int i = address; i < address + size; i++) {
-			ssdData[address] = IntToHexUppercaseString(0);
+			ssdData[i] = IntToHexUppercaseString(0);
 		}
 		setSsdData(ssdData);
 	}
