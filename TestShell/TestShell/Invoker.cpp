@@ -22,8 +22,10 @@ public:
 
 	void execute(CommandParser& cp) {
 		for (const auto& command : commands) {
-			if(command->getCommand() == cp.cmd)
+			if (command->getCommand() == cp.cmd) {
 				command->execute(cp, product);
+				logger.write_Log(eLoggingOpt::ONLY_FILE, "Invoker", cp.cmd + " Command execute");
+			}
 		}
 	}
 
