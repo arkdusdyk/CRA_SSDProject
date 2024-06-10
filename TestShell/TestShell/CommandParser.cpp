@@ -40,7 +40,7 @@ public:
 		int token_n = tokens.size();
 		if (token_n == 1) {
 			cmd = tokens[0];
-			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2")) {
+			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2") || (cmd == "flush")) {
 			}
 			else
 				throw exception("INVALID COMMAND");
