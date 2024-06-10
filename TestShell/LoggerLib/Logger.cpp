@@ -82,22 +82,18 @@ void Logger::printFile(const string& log) {
 		string prevFilePath = logDir + "\\untill*.log";
 		struct _finddata_t fd;
 		intptr_t handle;
-		if ((handle = _findfirst(prevFilePath.c_str(), &fd)) == -1L)
+		if ((handle = _findfirst(prevFilePath.c_str(), &fd)) != -1L)
 		{
-			cout << "No file in directory!" << endl;
-			// 파일이 없을경우 발생시킬 이벤트.
+			do
+			{
+				string prevFilename = logDir + "\\" + fd.name;
+				string chgFilename = prevFilename;
+				ChangeExt((char*)chgFilename.c_str(), (char*)".zip");
+				filesystem::rename(prevFilename, chgFilename);
+
+			} while (_findnext(handle, &fd) == 0);
+			_findclose(handle);
 		}
-
-		do
-		{
-			string prevFilename = logDir + "\\" + fd.name;
-			string chgFilename = prevFilename;
-			ChangeExt((char*)chgFilename.c_str(), (char*)".zip");
-			filesystem::rename(prevFilename, chgFilename);
-
-		} while (_findnext(handle, &fd) == 0);
-		_findclose(handle);
-
 
 		string newName = logDir;
 		char temp[128];
