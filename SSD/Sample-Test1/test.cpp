@@ -16,6 +16,7 @@ class SSDFIxture : public testing::Test {
 public:
     const string OUTPUT = "result.txt";
     const string NAND = "nand.txt";
+    const string CMDFILE = "cmdlist.txt";
 
     Device* device = new StorageDevice();
     Storage* ssd = device->setDevice(TYPE_SSD);
@@ -87,6 +88,45 @@ public:
         argv[0] = "ssd.exe";
         argv[1] = "F";
         return invoker.executeCommands(2, argv);
+    }
+
+    vector<string> getSsdData() {
+        vector<string> data;
+        ifstream inFile(NAND);
+
+        if (!inFile.is_open()) {
+            return data;
+        }
+
+        string line;
+        while (getline(inFile, line)) {
+            data.push_back(line);
+        }
+        inFile.close();
+
+        return data;
+    }
+
+    vector<CommandSet> getCommandList() {
+        ifstream cmdFile(CMDFILE);
+        vector<CommandSet> cmdlist;
+
+        if (!cmdFile.good()) {
+            cmdFile.close();
+            return cmdlist;
+        }
+
+        string line;
+        while (getline(cmdFile, line)) {
+            istringstream iss(line);
+            CommandSet tempCmd;
+
+            iss >> tempCmd.cmdOpcode >> tempCmd.address >> tempCmd.data >> tempCmd.size;
+            cmdlist.push_back(tempCmd);
+        }
+        cmdFile.close();
+
+        return cmdlist;
     }
 };
 
@@ -261,4 +301,67 @@ TEST_F(SSDFIxture, CommandInvokerWriteAndErase) {
     makeReadCmd("10");
     expectedData = 0x00000000;
     EXPECT_THAT(readResult(), testing::Eq(expectedData));
+}
+
+TEST_F(SSDFIxture, CommandInvokerWriteFlushErase) {
+    makeWriteCmd("3", "0x00000003");
+    makeFlushCmd();
+
+    makeEraseCmd("0", "10");
+    makeReadCmd("3");
+
+    int expectedData = 0x00000000;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
+}
+
+TEST_F(SSDFIxture, CommandInvokerFlush10) {
+    makeWriteCmd("10", "0x00000010");
+    makeWriteCmd("20", "0x00000020");
+    makeWriteCmd("30", "0x00000030");
+    makeWriteCmd("40", "0x00000040");
+    makeWriteCmd("50", "0x00000050");
+    makeWriteCmd("60", "0x00000060");
+    makeWriteCmd("70", "0x00000070");
+    makeWriteCmd("80", "0x00000080");
+    makeWriteCmd("90", "0x00000090");
+
+    vector<string> data = getSsdData();
+    EXPECT_THAT(data.empty(), TRUE);
+
+    makeWriteCmd("1", "0x00000001");
+    data = getSsdData();
+    EXPECT_THAT(data[1], testing::Eq("0x00000001"));
+}
+
+TEST_F(SSDFIxture, CommandInvokerFastWriteCase1) {
+    makeEraseCmd("10", "5");
+    makeEraseCmd("15", "5");
+
+    vector<CommandSet> cmdset = getCommandList();
+    EXPECT_THAT(cmdset.size(), testing::Eq(1));
+    EXPECT_THAT(cmdset[0].cmdOpcode, testing::Eq(SSD::COMMAND_ERASE));
+    EXPECT_THAT(cmdset[0].address, testing::Eq(10));
+    EXPECT_THAT(cmdset[0].size, testing::Eq(10));
+}
+
+TEST_F(SSDFIxture, CommandInvokerFastWriteCase2) {
+    makeWriteCmd("3", "0xdeadbeef");
+    makeEraseCmd("0", "5");
+
+    vector<CommandSet> cmdset = getCommandList();
+    EXPECT_THAT(cmdset.size(), testing::Eq(1));
+    EXPECT_THAT(cmdset[0].cmdOpcode, testing::Eq(SSD::COMMAND_ERASE));
+    EXPECT_THAT(cmdset[0].address, testing::Eq(0));
+    EXPECT_THAT(cmdset[0].size, testing::Eq(5));
+}
+
+TEST_F(SSDFIxture, CommandInvokerFastRead) {
+    makeWriteCmd("3", "0xdeadbeef");
+    makeReadCmd("3");
+
+    int expectedData = 0xdeadbeef;
+    EXPECT_THAT(readResult(), testing::Eq(expectedData));
+
+    vector<string> data = getSsdData();
+    EXPECT_EQ(data.empty(), TRUE);
 }
