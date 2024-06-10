@@ -7,8 +7,6 @@
 #include "Erase.cpp"
 #include "Flush.cpp"
 
-#define DEBUG (0)
-
 int main(int argc, char* argv[])
 {
     Device* device = new StorageDevice();
@@ -33,4 +31,5 @@ int main(int argc, char* argv[])
         std::cout << "Exception: " << e.what() << std::endl;
         return -EPERM;
     }
+    return 0;
 }
