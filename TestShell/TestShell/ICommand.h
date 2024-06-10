@@ -11,7 +11,7 @@ using namespace std;
 class ICommand {
 public:
 	virtual string getCommand() = 0;
-	virtual void execute(CommandParser cp, IProduct* product) = 0;
+	virtual void execute(CommandParser& cp, IProduct* product) = 0;
 	void setRunnerMode(bool run_flag) {
 		isRunningTestScenario = run_flag;
 	}
