@@ -31,7 +31,7 @@ public:
 
 	void setRun(bool runflag) {
 		for (const auto& command : commands) {
-			command->setRunMode(runflag);
+			command->setRunnerMode(runflag);
 		}
 		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "set runflag : " + runflag);
 	}

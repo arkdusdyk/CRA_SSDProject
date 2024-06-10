@@ -13,7 +13,7 @@ public:
 	{
 		checkInvalid_LBA(cp.lba);
 		string result = product->Read(cp.lba);
-		if (running == false)
+		if (isRunningTestScenario == false)
 			cout << result <<  endl;
 		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Read Data (LBA) : " + result + "(" + to_string(cp.lba) + ")");
 	}
