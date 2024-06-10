@@ -21,6 +21,10 @@ public:
 	vector<string> getResult() {
 		return result;
 	}
+
+	void clearResult() {
+		result.clear();
+	}
 	
 	void command_parse(string cmd_line) {
 		if (cmd_line == "")

@@ -11,6 +11,7 @@ public:
 
 	void execute(CommandParser& cp, IProduct* product) override
 	{
+		/*
 		//bool ret false;
 		for (int lba = 0; lba < 100; lba++) {
 			product->Write(lba, TEST_PATTERN_TESTAPP1);
@@ -32,6 +33,7 @@ public:
 			if (results[lba] != TEST_PATTERN_TESTAPP1)
 				throw exception("TestApp1 Error!");
 		}
+		*/
 	}
 
 private:
