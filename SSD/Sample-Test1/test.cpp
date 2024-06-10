@@ -11,6 +11,7 @@
 #include "../SSD/Read.cpp"
 #include "../SSD/Erase.cpp"
 #include "../SSD/Flush.cpp"
+#include "../SSD/util.cpp"
 
 class SSDFIxture : public testing::Test {
 public:
