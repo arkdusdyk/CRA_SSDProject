@@ -133,7 +133,7 @@
     <ClCompile Include="CommandParser.cpp" />
     <ClCompile Include="EraseCommand.cpp" />
     <ClCompile Include="EraseRangeCommand.cpp" />
-    <ClCompile Include="FullRead10AndCompare.cpp" />
+    <ClCompile Include="FlushCommand.cpp" />
     <ClCompile Include="FullReadCommand.cpp" />
     <ClCompile Include="FullWriteCommand.cpp" />
     <ClCompile Include="HelpCommand.cpp" />
