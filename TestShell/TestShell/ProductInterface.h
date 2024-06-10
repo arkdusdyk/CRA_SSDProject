@@ -26,8 +26,10 @@ public:
 		string cmd = curPath;
 		cmd.append(mExecuteName + " W " + std::to_string(addr) + " " + value);
 		int res = system(cmd.c_str());
+
 		if (res != 0)
 			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "실행파일을 실행하지 못했습니다. : " + to_string(res) + "-" + cmd);
+
 		
 	}
 
@@ -35,8 +37,10 @@ public:
 		string cmd = curPath;
 		cmd.append(mExecuteName + " R " + std::to_string(addr));
 		int res = system(cmd.c_str());
+
 		if (res != 0)
 			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "실행파일을 실행하지 못했습니다. : " + to_string(res) + "-" + cmd);
+
 
 		ifstream readFile;
 		string result;

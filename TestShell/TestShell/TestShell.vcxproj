@@ -143,11 +143,13 @@
     <ClCompile Include="ProductInterface.h" />
     <ClCompile Include="ReadCommand.cpp" />
     <ClCompile Include="Runner.cpp" />
+    <ClCompile Include="TestApp1Command.cpp" />
+    <ClCompile Include="TestApp2Command.cpp" />
     <ClCompile Include="TestShell_Exception.h" />
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="run_list.lst" />
+    <None Include="..\x64\Debug\run_list.lst" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

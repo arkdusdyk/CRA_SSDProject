@@ -13,6 +13,8 @@
 #include "FullReadCommand.cpp"
 #include "FullWriteCommand.cpp"
 #include "FlushCommand.cpp"
+#include "TestApp1Command.cpp"
+#include "TestApp2Command.cpp"
 
 using namespace std;
 
@@ -29,6 +31,9 @@ int main(int argc, char* argv[]) {
 	invoker.addCommand(move(make_unique<FullReadCommand>()));
 	invoker.addCommand(move(make_unique<FullWriteCommand>()));
 	invoker.addCommand(move(make_unique<FlushCommand>()));
+	invoker.addCommand(move(make_unique<TestApp1Command>()));
+	invoker.addCommand(move(make_unique<TestApp2Command>()));
+
 
 	CommandParser cp;
 	Logger& logger = Logger::GetInstance();
@@ -65,7 +70,7 @@ int main(int argc, char* argv[]) {
 				try {
 					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, script + " --- Run...");
 					cp.command_parse(script);
-					transform(script.begin(), script.end(), script.begin(), ::toupper);
+					transform(cp.cmd.begin(), cp.cmd.end(), cp.cmd.begin(), ::toupper);
 					invoker.execute(cp);
 					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "Pass");
 				}
