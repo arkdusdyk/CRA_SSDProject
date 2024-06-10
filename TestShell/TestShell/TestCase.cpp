@@ -8,9 +8,15 @@
 
 using json = nlohmann::json;
 
+unordered_map<TestCase::Tag, string> TestCase::mTags = {
+	   {Tag::ID, string("ID")},
+	   {Tag::STEPS, string("STEPS")},
+	   {Tag::EXPECTED, string("EXPECTED")},
+};
+
 TestCase::TestCase(string fileName) : mFileName(fileName) {
 	json jsonParser;
-	string name = "testcases/";
+	string name = mTestCasePath;
 	name.append(fileName);
 	name.append(".tc");
 	std::ifstream file(name, std::ios::in);
@@ -18,15 +24,15 @@ TestCase::TestCase(string fileName) : mFileName(fileName) {
 		file >> jsonParser;
 		file.close();
 	}
-	mId = jsonParser["ID"];
+	mId = jsonParser[mTags.at(Tag::ID)];
 
-	for (const auto& item : jsonParser["STEPS"]) {
+	for (const auto& item : jsonParser[mTags.at(Tag::STEPS)]) {
 		mSteps.push_back(item);
 	}
 
 	int i = 0;
-	for (const auto& item : jsonParser["EXPECTED"]) {
-		string expectFileName = "testcases/";
+	for (const auto& item : jsonParser[mTags.at(Tag::EXPECTED)]) {
+		string expectFileName = mTestCasePath;
 		expectFileName.append(item);
 		std::ifstream expectedFile(expectFileName, std::ios::in);
 		if (expectedFile.is_open()) {
@@ -45,8 +51,15 @@ TestCase::~TestCase() {
 	mExpectedResults.clear();
 }
 
+string TestCase::getId() {
+	return mId;
+}
+
 bool TestCase::execute(CommandParser& cp, CommandInvoker& invoker) {
 	Logger& logger = Logger::GetInstance();
+
+	logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, getId() + " --- Run...");
+	cout << getId() << " --- Run...";
 	try {
 		int32_t expectIdx{};
 		for (auto& step: mSteps) {
@@ -60,16 +73,19 @@ bool TestCase::execute(CommandParser& cp, CommandInvoker& invoker) {
 					actualResult.append(r);
 				}
 				if (actualResult != mExpectedResults[expectIdx++]) {
-					logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "[FAIL]");
+					logger.write_Log(eLoggingOpt::ONLY_FILE, "", "[FAIL]");
+					cout << "[FAIL]" << endl;
 					return false;
 				}
 				cp.clearResult();
 			}
 		}
-		logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "[PASS]");
+		logger.write_Log(eLoggingOpt::ONLY_FILE, "", "[PASS]");
+		cout << "[PASS]" << endl;
 	}
 	catch (exception) {
-		cout << "[FAIL]" << "\n";
+		logger.write_Log(eLoggingOpt::ONLY_FILE, "", "[FAIL]");
+		cout << "[FAIL]" << endl;
 		return false;
 	}
 
