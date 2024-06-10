@@ -16,8 +16,7 @@ public:
 		for (int lba = 0; lba < MAX_LBA; lba++) {
 			results.push_back(product->Read(lba));
 			if (isRunningTestScenario == false)
-				cout << results[lba] << endl;
-			logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "[LBA] Data  : [" + to_string(lba) + "] " + results[lba]);
+				logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "[LBA] Data  : [" + to_string(lba) + "] " + results[lba]);
 		}
 		//return results;
 		cp.setResult(results);
