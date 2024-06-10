@@ -12,6 +12,7 @@
 #include "EraseRangeCommand.cpp"
 #include "FullReadCommand.cpp"
 #include "FullWriteCommand.cpp"
+#include "FlushCommand.cpp"
 #include "TestCase.h"
 #include "TestApp1Command.cpp"
 #include "TestApp2Command.cpp"
@@ -19,7 +20,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-;	string input_cmd;
+	string input_cmd;
 
 	CommandInvoker invoker;
 	invoker.createProduct("SSD");
@@ -30,6 +31,7 @@ int main(int argc, char* argv[]) {
 	invoker.addCommand(move(make_unique<EraseRangeCommand>()));
 	invoker.addCommand(move(make_unique<FullReadCommand>()));
 	invoker.addCommand(move(make_unique<FullWriteCommand>()));
+	invoker.addCommand(move(make_unique<FlushCommand>()));
 	invoker.addCommand(move(make_unique<TestApp1Command>()));
 	invoker.addCommand(move(make_unique<TestApp2Command>()));
 
