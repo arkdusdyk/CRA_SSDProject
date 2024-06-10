@@ -34,8 +34,8 @@ int main(int argc, char* argv[]) {
 	invoker.addCommand(move(make_unique<FullWriteCommand>()));
 	invoker.addCommand(move(make_unique<TestApp1Command>()));
 	invoker.addCommand(move(make_unique<TestApp2Command>()));
-	invoker.addCommand(move(make_unique<FullRead10AndCompare>()));
-	invoker.addCommand(move(make_unique<Write10AndCompare>()));
+	//invoker.addCommand(move(make_unique<FullRead10AndCompare>()));
+	//invoker.addCommand(move(make_unique<Write10AndCompare>()));
 
 
 	CommandParser cp;
