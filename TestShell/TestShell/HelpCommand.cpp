@@ -26,6 +26,7 @@ private:
 	"4. help (예) help : 주요 명령어의 사용방법 출력)",
 	"5. fullwrite (예) fullwrite data : 모든 LBA(0~99)까지 data 를 write 수행)",
 	"6. fullread (예) fullread : 모든 LBA(0~99) 까지 read 수행)",
-	"7. erase (예) erase LBA size : 특정 LBA부터 특정 size까지 내용 삭제"
+	"7. erase (예) erase LBA size : 특정 LBA부터 특정 size까지 내용 삭제",
+	"8. erase_range (예) erase_range LBA LBA : 특정 LBA부터 특정LBA 직전까지 내용 삭제"
 	};
 };
