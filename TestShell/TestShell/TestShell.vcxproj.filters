@@ -60,14 +60,13 @@
     <ClCompile Include="WriteCommand.cpp">
       <Filter>소스 파일\Command</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="FlushCommand.cpp">
-=======
+      <Filter>소스 파일\Command</Filter>
+    </ClCompile>
     <ClCompile Include="TestApp1Command.cpp">
       <Filter>소스 파일\Command</Filter>
     </ClCompile>
     <ClCompile Include="TestApp2Command.cpp">
->>>>>>> origin/master
       <Filter>소스 파일\Command</Filter>
     </ClCompile>
   </ItemGroup>
