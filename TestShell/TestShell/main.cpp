@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 				try {
 					cout << script << " --- Run...";
 					cp.command_parse(script);
-					transform(script.begin(), script.end(), script.begin(), ::toupper);
+					transform(cp.cmd.begin(), cp.cmd.end(), cp.cmd.begin(), ::toupper);
 					invoker.execute(cp);
 					cout << "Pass" << "\n";
 				}
