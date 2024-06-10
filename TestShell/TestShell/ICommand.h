@@ -12,6 +12,9 @@ class ICommand {
 public:
 	virtual string getCommand() = 0;
 	virtual void execute(CommandParser cp, IProduct* product) = 0;
+	void setRunMode(bool run_flag) {
+		running = run_flag;
+	}
 
 protected:
 	void checkInvalid_LBA(int arr) {
@@ -29,4 +32,5 @@ protected:
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = "0xAABBCCDD";
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
+	bool running = false;
 };
