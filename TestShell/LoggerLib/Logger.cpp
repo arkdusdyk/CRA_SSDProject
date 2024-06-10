@@ -10,16 +10,16 @@
 #include <io.h>
 
 void Logger::write_Log(eLoggingOpt loggingOption, string sfunctionName, string log_detail) {
-	string log = getCurrentTimetoString()+ " " + setPaddingString(sfunctionName+"()") + " : " + log_detail;
+	string log = getCurrentTimetoString() + " " + setPaddingString(sfunctionName + "()") + " : " + log_detail;
 
 	switch (loggingOption)
 	{
 	case eLoggingOpt::ALL_PRINT:
 		printConsole(log);
-		printFile(log);
+		writeLogFile(log);
 		break;
 	case eLoggingOpt::ONLY_FILE:
-		printFile(log);
+		writeLogFile(log);
 		break;
 	case eLoggingOpt::ONLY_CONSOLE:
 		printConsole(log);
@@ -28,7 +28,6 @@ void Logger::write_Log(eLoggingOpt loggingOption, string sfunctionName, string l
 		break;
 	}
 }
-
 
 string Logger::getCurrentTimetoString() {
 	auto chrono_Now = std::chrono::system_clock::now();
@@ -40,7 +39,7 @@ string Logger::getCurrentTimetoString() {
 
 	char temp[128];
 	strftime(temp, sizeof(temp), "%Y-%m-%d %H:%M:%S.", now_time);
-	
+
 	std::ostringstream oss;
 	oss << "[" << temp << left << setfill('0') << setw(3) << millisec.count() << "]";
 	return oss.str();
@@ -57,16 +56,11 @@ void Logger::printConsole(const string& log) {
 	cout << log << endl;
 }
 
-void Logger::printFile(const string& log) {
+void Logger::writeLogFile(const string& log) {
 
-	// dir 존재 여부 체크
 	string logDir = "log";
-	filesystem::path dirPath(logDir);
-	if (filesystem::exists(dirPath) == false) {
-		if (create_directory(dirPath)) {
-			cout << "Directory created successfully." << endl;
-		}
-	}
+
+	check_LogDir(logDir);
 
 	string logPath = logDir + "\\latest.log";
 	ofstream logFile(logPath, ios::app);
@@ -75,43 +69,66 @@ void Logger::printFile(const string& log) {
 	}
 	logFile.close();
 
+	check_Filesize(logPath, logDir);
+}
+
+void Logger::check_LogDir(std::string& logDir)
+{
+	filesystem::path dirPath(logDir);
+	if (filesystem::exists(dirPath) == false) {
+		if (create_directory(dirPath) == false)
+			throw exception("Directory 생성 실패");
+	}
+}
+
+void Logger::check_Filesize(std::string& logPath, std::string& logDir)
+{
 	auto fileSize = filesystem::file_size(logPath);
 	// 파일 크기 체크 및 변환 구현 필요.
 	if (fileSize > 10240)
 	{
-		string prevFilePath = logDir + "\\untill*.log";
-		struct _finddata_t fd;
-		intptr_t handle;
-		if ((handle = _findfirst(prevFilePath.c_str(), &fd)) != -1L)
-		{
-			do
-			{
-				string prevFilename = logDir + "\\" + fd.name;
-				string chgFilename = prevFilename;
-				ChangeExt((char*)chgFilename.c_str(), (char*)".zip");
-				filesystem::rename(prevFilename, chgFilename);
+		press_PrevUntillLog(logDir);
 
-			} while (_findnext(handle, &fd) == 0);
-			_findclose(handle);
-		}
-
-		string newName = logDir;
-		char temp[128];
-		strftime(temp, sizeof(temp), "%Y%m%d %Hh%Mm%Ss", now_time);
-		newName.append("\\untill_");
-		newName.append(temp);
-		newName.append(".log");
-		filesystem::rename(logPath, newName);
-		// 이전 until file이 있으면 압축
+		make_UntillLog(logDir, logPath);
 	}
 }
 
+void Logger::press_PrevUntillLog(std::string& logDir)
+{
+	string prevFilePath = logDir + "\\untill*.log";
+	struct _finddata_t fd;
+	intptr_t handle;
+	if ((handle = _findfirst(prevFilePath.c_str(), &fd)) != -1L) {
+		do {
+			string prevFilename = logDir + "\\" + fd.name;
+			pressLogFile(prevFilename);
 
-void Logger::ChangeExt(char* path, char* newext) {
+		} while (_findnext(handle, &fd) == 0);
+		_findclose(handle);
+	}
+}
+
+void Logger::pressLogFile(string prevFilename) {
 	char drive[_MAX_DRIVE];
 	char dir[_MAX_DIR];
 	char fname[_MAX_FNAME];
 	char ext[_MAX_EXT];
-	_splitpath(path, drive, dir, fname, ext);
-	sprintf(path, "%s%s%s%s", drive, dir, fname, newext);
+
+	_splitpath(prevFilename.c_str(), drive, dir, fname, ext);
+
+	char chgFilename[_MAX_DIR];
+	sprintf(chgFilename, "%s%s%s%s", drive, dir, fname, ".zip");
+
+	filesystem::rename(prevFilename, chgFilename);
+}
+
+void Logger::make_UntillLog(std::string& logDir, std::string& logPath)
+{
+	string newName = logDir;
+	char temp[128];
+	strftime(temp, sizeof(temp), "%Y%m%d %Hh%Mm%Ss", now_time);
+	newName.append("\\untill_");
+	newName.append(temp);
+	newName.append(".log");
+	filesystem::rename(logPath, newName);
 }
