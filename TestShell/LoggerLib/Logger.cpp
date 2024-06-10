@@ -9,8 +9,10 @@
 #include <filesystem>
 #include <io.h>
 
-void Logger::write_Log(eLoggingOpt loggingOption, string sfunctionName, string log_detail) {
-	string log = getCurrentTimetoString() + " " + setPaddingString(sfunctionName + "()") + " : " + log_detail;
+void Logger::write_Log(eLoggingOpt loggingOption, string functionName, string log_detail, bool addEndl) {
+	string log = getCurrentTimetoString() + " " + setPaddingString(functionName + "()") + " : " + log_detail;
+	if (addEndl && log_detail[log_detail.size()] != '\n')
+		log = log + "\n";
 
 	switch (loggingOption)
 	{
@@ -53,7 +55,7 @@ string Logger::setPaddingString(const string& str)
 }
 
 void Logger::printConsole(const string& log) {
-	cout << log << endl;
+	cout << log;
 }
 
 void Logger::writeLogFile(const string& log) {
@@ -65,7 +67,7 @@ void Logger::writeLogFile(const string& log) {
 	string logPath = logDir + "\\latest.log";
 	ofstream logFile(logPath, ios::app);
 	if (logFile.is_open()) {
-		logFile << log << endl;
+		logFile << log;
 	}
 	logFile.close();
 

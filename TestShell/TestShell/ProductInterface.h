@@ -29,8 +29,6 @@ public:
 
 		if (res != 0)
 			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "실행파일을 실행하지 못했습니다. : " + to_string(res) + "-" + cmd);
-
-		
 	}
 
 	virtual string Read(int addr) override {
