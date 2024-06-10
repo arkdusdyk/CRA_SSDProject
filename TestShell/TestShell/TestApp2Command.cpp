@@ -24,7 +24,7 @@ public:
 
 		for (int lbaAddress = 0; lbaAddress <= 5; lbaAddress++) {
 			string result = product->Read(lbaAddress);
-			if (running == false)
+			if (isRunningTestScenario == false)
 				cout << result << endl;
 		}
 		*/

@@ -13,6 +13,7 @@ __interface IProduct
 	virtual void Write(int addr, string value) = 0;
 	virtual string Read(int addr) = 0;
 	virtual void Erase(int addr, int size) = 0;
+	virtual void Flush() = 0;
 };
 
 class SSDProduct : public IProduct
@@ -28,8 +29,6 @@ public:
 
 		if (res != 0)
 			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "실행파일을 실행하지 못했습니다. : " + to_string(res) + "-" + cmd);
-
-		
 	}
 
 	virtual string Read(int addr) override {
@@ -63,6 +62,16 @@ public:
 		if (res != 0)
 			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "실행파일을 실행하지 못했습니다. : " + to_string(res) + "-" + cmd);
 	}
+
+	virtual void Flush() {
+		string cmd = curPath;
+		cmd.append(mExecuteName + " F");
+		int res = system(cmd.c_str());
+		if (res != 0)
+			logger.write_Log(eLoggingOpt::ALL_PRINT, __FUNCTION__, "실행파일을 실행하지 못했습니다. : " + to_string(res) + "-" + cmd);
+
+	}
+
 private:
 	char curPath[256];
 

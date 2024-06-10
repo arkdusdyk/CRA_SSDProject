@@ -44,7 +44,7 @@ public:
 		int token_n = tokens.size();
 		if (token_n == 1) {
 			cmd = tokens[0];
-			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2")||(cmd == "FullRead10AndCompare")||(cmd == "Write10AndCompare")) {
+			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2") || (cmd == "flush")) {
 			}
 			else
 				throw exception("INVALID COMMAND");
@@ -80,13 +80,13 @@ public:
 				data = tokens[2];
 			}
 			else if (cmd == "erase") {
-				if (isLBAinRange(tokens[1]) == false || isLBAinRange(tokens[2]) == false)
+				if (isLBAinRange(tokens[1]) == false || isSizeValid(tokens[1], tokens[2]) == false)
 					throw exception("Data out of range");
 				lba = stoi(tokens[1]);
 				size = stoi(tokens[2]);
 			}
 			else if (cmd == "erase_range") {
-				if (isLBAinRange(tokens[1]) == false || isLBAinRange(tokens[2]) == false)
+				if (isLBAinRange(tokens[1]) == false || isLBAinRange(tokens[2]) == false || (stoi(tokens[2]) < stoi(tokens[1])))
 					throw exception("Data out of range");
 				lba = stoi(tokens[1]);
 				endLba = stoi(tokens[2]);
@@ -132,6 +132,12 @@ public:
 			if (flag == true)
 				return true;
 		}
+		return false;
+	}
+
+	bool isSizeValid(string startLBA, string size) {
+		if (stoi(size) >= 0 && stoi(size) <= 100 && (stoi(startLBA) + stoi(size) >= 0 && stoi(startLBA) + stoi(size) <= 100))
+			return true;
 		return false;
 	}
 };

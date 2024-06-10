@@ -21,9 +21,9 @@ public:
 				tmp -= 10;
 				logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Erase  : " + to_string(cp.lba + i * 10) + " ~ " + to_string(cp.lba + i * 10 + 9));
 			}
-			else {
+			else if (tmp != 0) {
 				product->Erase(cp.lba + i * 10, tmp);
-				logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Erase  : " + to_string(cp.lba + i * 10) + " ~ " + to_string(cp.lba + i * 10 + tmp));
+				logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "Erase  : " + to_string(cp.lba + i * 10) + " ~ " + to_string(cp.lba + i * 10 + tmp - 1));
 			}
 		}
 	}
