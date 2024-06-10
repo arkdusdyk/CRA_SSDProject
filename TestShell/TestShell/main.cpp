@@ -31,6 +31,7 @@ int main(int argc, char* argv[]) {
 	CommandParser cp;
 	Logger& logger = Logger::GetInstance();
 	if (argc == 1) {
+		logger.write_Log(eLoggingOpt::ONLY_FILE, "main", "Console mode running...");
 		while (1) {
 			try {
 				cout << "> ";
@@ -40,15 +41,19 @@ int main(int argc, char* argv[]) {
 				cp.command_parse(input_cmd);
 				transform(cp.cmd.begin(), cp.cmd.end(), cp.cmd.begin(), ::toupper);
 				invoker.execute(cp);
-				if (cp.cmd == "EXIT")
+				if (cp.cmd == "EXIT") {
+					logger.write_Log(eLoggingOpt::ONLY_FILE, "main", "Program Exit");
 					break;
+				}
 			}
 			catch (exception) {
 				cout << "INVALID COMMAND\n";
+				logger.write_Log(eLoggingOpt::ONLY_FILE, "main", "INVALID COMMAND");
 			}
 		}
 	}
 	else {
+		logger.write_Log(eLoggingOpt::ONLY_FILE, "main", "Script mode running...");
 		Runner runner;
 		bool run_flag = runner.readScenario(argv[1]);
 		invoker.setRun(run_flag);
