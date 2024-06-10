@@ -67,6 +67,8 @@ public:
 		CommandSet cmd = { COMMAND_ERASE, address, 0, size };
 
 		checkingValidLba(address, size);
+		checkingEraseSize(size);
+
 		setCommandList(cmd);
 	}
 
@@ -97,14 +99,32 @@ private:
 	static constexpr int SSD_CAPACITY = 100;
 	static constexpr int MIN_LBA = 0;
 	static constexpr int MAX_LBA = (SSD_CAPACITY -1);
+	static constexpr int MIN_ERASE_SIZE = 1;
+	static constexpr int MAX_ERASE_SIZE = 10;
 	static constexpr int CLEAN_PAGE_DATA = 0;
 
 	void checkingValidLba(int address, int size)
 	{
 		if (address < MIN_LBA || (address + size - 1) > MAX_LBA)
 		{
-			string errorMessage = "address range is ";
+			string errorMessage = "Address range is ";
 			errorMessage += std::to_string(MIN_LBA) + " <= address <= " + std::to_string(MAX_LBA);
+			throw ssd_exception(errorMessage);
+		}
+	}
+
+	void checkingEraseSize(int size)
+	{
+		if (size > MAX_ERASE_SIZE)
+		{
+			string errorMessage = "Erase size must be less than or equal to ";
+			errorMessage += std::to_string(MAX_ERASE_SIZE);
+			throw ssd_exception(errorMessage);
+		}
+		else if (size < MIN_ERASE_SIZE)
+		{
+			string errorMessage = "Erase size must be at least ";
+			errorMessage += std::to_string(MIN_ERASE_SIZE);
 			throw ssd_exception(errorMessage);
 		}
 	}
@@ -183,6 +203,14 @@ private:
 			{
 				data = it->data;
 				writeResult(IntToHexUppercaseString(data));
+				return true;
+			}
+			int startlba = it->address;
+			int endlba = it->address + it->size - 1;
+			if (it->cmdOpcode == SSD::COMMAND_ERASE && (startlba <= cmd.address && cmd.address <= endlba))
+			{
+				data = it->data;
+				writeResult(IntToHexUppercaseString(CLEAN_PAGE_DATA));
 				return true;
 			}
 		}
@@ -354,7 +382,7 @@ private:
 		checkDataInit();
 		ssdData = getSsdData();
 		for (int i = address; i < address + size; i++) {
-			ssdData[i] = IntToHexUppercaseString(0);
+			ssdData[i] = IntToHexUppercaseString(CLEAN_PAGE_DATA);
 		}
 		setSsdData(ssdData);
 	}

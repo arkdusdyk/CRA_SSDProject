@@ -14,7 +14,7 @@ public:
 		vector<string> results;
 		for (int lba = 0; lba < MAX_LBA; lba++) {
 			results.push_back(product->Read(lba));
-			if (running == false)
+			if (isRunningTestScenario == false)
 				cout << results[lba] << endl;
 		}
 		//return results;

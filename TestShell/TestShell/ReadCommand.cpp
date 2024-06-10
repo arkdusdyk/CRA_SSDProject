@@ -13,7 +13,7 @@ public:
 	{
 		checkInvalid_LBA(cp.lba);
 		string result = product->Read(cp.lba);
-		if (running == false)
+		if (isRunningTestScenario == false)
 			cout << result <<  endl;
 	}
 

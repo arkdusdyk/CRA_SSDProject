@@ -16,7 +16,7 @@ public:
 
 		int tmp = cp.size;
 		for (int i = 0; i < (cp.size / 10 + 1); i++) {
-			if (tmp > 10) {
+			if (tmp >= 10) {
 				product->Erase(cp.lba + i * 10, 10);
 				tmp -= 10;
 			}

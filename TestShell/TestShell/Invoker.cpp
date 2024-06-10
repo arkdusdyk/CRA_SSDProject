@@ -2,6 +2,7 @@
 
 #include "ProductInterface.h"
 #include "ICommand.h"
+#include "Logger.h"
 #include "CommandParser.cpp"
 
 class CommandInvoker {
@@ -21,18 +22,22 @@ public:
 
 	void execute(CommandParser& cp) {
 		for (const auto& command : commands) {
-			if(command->getCommand() == cp.cmd)
+			if (command->getCommand() == cp.cmd) {
 				command->execute(cp, product);
+				logger.write_Log(eLoggingOpt::ONLY_FILE, "Invoker", cp.cmd + " Command execute");
+			}
 		}
 	}
 
 	void setRun(bool runflag) {
 		for (const auto& command : commands) {
-			command->setRunMode(runflag);
+			command->setRunnerMode(runflag);
 		}
+		logger.write_Log(eLoggingOpt::ONLY_FILE, "Invoker", "set runflag : " + runflag);
 	}
 
 private:
 	IProduct* product;
 	std::vector<std::unique_ptr<ICommand>> commands;
+	Logger& logger = Logger::GetInstance();
 };
