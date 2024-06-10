@@ -1,25 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="CommandParser.cpp" />
-    <ClCompile Include="EraseCommand.cpp" />
-    <ClCompile Include="EraseRangeCommand.cpp" />
-    <ClCompile Include="FullReadCommand.cpp" />
-    <ClCompile Include="FullWriteCommand.cpp" />
-    <ClCompile Include="HelpCommand.cpp" />
-    <ClCompile Include="ICommand.h" />
-    <ClCompile Include="Invoker.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ProductInterface.h" />
-    <ClCompile Include="ReadCommand.cpp" />
-    <ClCompile Include="Runner.cpp" />
-    <ClCompile Include="TestCase.cpp" />
-    <ClCompile Include="TestApp1Command.cpp" />
-    <ClCompile Include="TestApp2Command.cpp" />
-    <ClCompile Include="TestShell_Exception.h" />
-    <ClCompile Include="WriteCommand.cpp" />
-    <ClCompile Include="FullRead10AndCompare.cpp" />
-    <ClCompile Include="Write10AndCompare.cpp" />
+    <ClCompile Include="EraseCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="EraseRangeCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="FlushCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="FullReadCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="FullWriteCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApp1Command.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApp2Command.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="Write10AndCompare.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="WriteCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="TestShell_Exception.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ProductInterface.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Runner.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCase.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadCommand.cpp">
+      <Filter>command</Filter>
+    </ClCompile>
+    <ClCompile Include="ICommand.h">
+      <Filter>command\Command_IF</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandParser.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Invoker.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -64,12 +102,9 @@
     <ClCompile Include="WriteCommand.cpp">
       <Filter>소스 파일\Command</Filter>
     </ClCompile>
-    <ClCompile Include="FlushCommand.cpp">
-      <Filter>소스 파일\Command</Filter>
-    </ClCompile>
     <ClCompile Include="TestCase.cpp">
       <Filter>소스 파일</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="TestApp1Command.cpp">
       <Filter>소스 파일\Command</Filter>
     </ClCompile>
@@ -79,5 +114,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\Debug\run_list.lst" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestCase.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="command">
+      <UniqueIdentifier>{7d9564f9-d3d7-4e31-8bd0-fb93d578c43b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{69ae7518-4745-4a5e-91ca-9af18e351304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{b964a37f-0f9c-4096-930d-e218a9704e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="command\Command_IF">
+      <UniqueIdentifier>{4be36eca-660a-4fd5-99f9-f31590562482}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
