@@ -24,7 +24,7 @@ public:
 		for (const auto& command : commands) {
 			if (command->getCommand() == cp.cmd) {
 				command->execute(cp, product);
-				logger.write_Log(eLoggingOpt::ONLY_FILE, "Invoker", cp.cmd + " Command execute");
+				logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, cp.cmd + " Command execute");
 			}
 		}
 	}
@@ -33,7 +33,7 @@ public:
 		for (const auto& command : commands) {
 			command->setRunnerMode(runflag);
 		}
-		logger.write_Log(eLoggingOpt::ONLY_FILE, "Invoker", "set runflag : " + runflag);
+		logger.write_Log(eLoggingOpt::ONLY_FILE, __FUNCTION__, "set runflag : " + runflag);
 	}
 
 private:

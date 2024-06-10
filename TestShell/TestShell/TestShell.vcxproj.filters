@@ -62,10 +62,15 @@
     </ClCompile>
     <ClCompile Include="TestCase.cpp">
       <Filter>소스 파일</Filter>
+    <ClCompile Include="TestApp1Command.cpp">
+      <Filter>소스 파일\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="TestApp2Command.cpp">
+      <Filter>소스 파일\Command</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="run_list.lst">
+    <None Include="..\x64\Debug\run_list.lst">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>

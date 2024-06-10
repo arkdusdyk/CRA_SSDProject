@@ -5,6 +5,7 @@
 #include "CommandParser.cpp"
 #include "ProductInterface.h"
 #include "TestShell_Exception.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -32,5 +33,6 @@ protected:
 	const int MAX_LBA = 100;
 	const string TEST_PATTERN_TESTAPP1 = "0xAABBCCDD";
 	const string TEST_PATTERN_TESPAPP2 = "0x12345678";
+	Logger& logger = Logger::GetInstance();
 	bool isRunningTestScenario = false;
 };
