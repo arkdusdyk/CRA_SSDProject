@@ -12,6 +12,11 @@ public:
 	int endLba;
 	string data;
 	int size;
+	vector<string> result;
+
+	void setResult(vector<string> result) {
+		this->result = result;
+	}
 	
 	void command_parse(string cmd_line) {
 		if (cmd_line == "")

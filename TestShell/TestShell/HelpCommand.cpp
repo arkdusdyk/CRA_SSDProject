@@ -9,7 +9,7 @@ public:
 		return commandName;
 	}
 
-	void execute(CommandParser cp, IProduct* product) override
+	void execute(CommandParser& cp, IProduct* product) override
 	{
 		for (string help : helpText) {
 			cout << help << endl;

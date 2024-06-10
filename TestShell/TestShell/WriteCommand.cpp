@@ -8,7 +8,7 @@ public:
 		return commandName;
 	}
 
-	void execute(CommandParser cp, IProduct* product) override
+	void execute(CommandParser& cp, IProduct* product) override
 	{
 		checkInvalid_LBA(cp.lba);
 		checkInvalid_Value(cp.data);

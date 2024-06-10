@@ -19,7 +19,7 @@ public:
 		commands.push_back(std::move(command));
 	}
 
-	void execute(CommandParser cp) {
+	void execute(CommandParser& cp) {
 		for (const auto& command : commands) {
 			if(command->getCommand() == cp.cmd)
 				command->execute(cp, product);

@@ -9,7 +9,7 @@ public:
 		return commandName;
 	}
 
-	void execute(CommandParser cp, IProduct* product) override
+	void execute(CommandParser& cp, IProduct* product) override
 	{
 		vector<string> results;
 		for (int lba = 0; lba < MAX_LBA; lba++) {
@@ -18,6 +18,7 @@ public:
 				cout << results[lba] << endl;
 		}
 		//return results;
+		cp.setResult(results);
 	}
 
 private:
