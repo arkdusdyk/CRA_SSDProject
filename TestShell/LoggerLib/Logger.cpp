@@ -77,7 +77,7 @@ void Logger::printConsole(const string& log) {
 void Logger::writeLogFile(const string& log) {
 	check_LogDir(logDir);
 
-	string logPath = logDir + "\\latest.log";
+	string logPath = logDir+processName + "\\latest.log";
 	ofstream logFile(logPath, ios::app);
 	if (logFile.is_open()) {
 		logFile << log;
