@@ -218,7 +218,6 @@ private:
 	{
 		vector<CommandSet> cmdset = getCommandList();
 		for (vector<CommandSet>::iterator it = cmdset.end(); it != cmdset.begin();)
-		//for (auto& cmd : cmdset)
 		{
 			it--;
 			if (it->cmdOpcode == SSD::COMMAND_WRITE && it->address == cmd.address)
