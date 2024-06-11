@@ -42,10 +42,10 @@ private:
 
 	void check_LogDir(std::string& logDir);
 
-	void check_Filesize(std::string& logPath, std::string& logDir);
+	void check_Filesize(std::string& logPath);
 
-	void press_PrevUntillLog(std::string& logDir);
+	void press_PrevUntillLog();
 	void pressLogFile(string prevFilename);
 
-	void make_UntillLog(std::string& logDir, std::string& logPath);
+	void make_UntillLog(std::string& logPath);
 };
