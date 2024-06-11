@@ -23,9 +23,10 @@ public:
 	}
 	void write_Log(eLoggingOpt loggingOption, string functionName, string log_detail, bool addEndl = true);
 private:
+	string logDir;
 	tm* now_time;
 
-	Logger() = default;
+	Logger();
 
 	Logger(const Logger&) = delete;
 	Logger& operator=(const Logger&) = delete;

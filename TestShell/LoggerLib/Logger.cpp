@@ -9,6 +9,22 @@
 #include <filesystem>
 #include <io.h>
 
+Logger::Logger() {
+	DWORD process_id = GetCurrentProcessId();
+	HANDLE process_handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, process_id);
+	if (process_handle) {
+		char buffer[MAX_PATH] = {};
+		DWORD buffer_size = MAX_PATH;
+		QueryFullProcessImageNameA(process_handle, 0, buffer, &buffer_size);
+		CloseHandle(process_handle);
+
+		string processName(buffer);
+		processName.erase(processName.find_last_of("."), std::string::npos);
+		auto idx = processName.find_last_of('\\');
+		logDir = "log"+ processName.substr(idx, processName.length() - idx);
+	}
+}
+
 void Logger::write_Log(eLoggingOpt loggingOption, string functionName, string log_detail, bool addEndl) {
 	string log = getCurrentTimetoString() + " " + setPaddingString(functionName + "()") + " : " + log_detail;
 	if (addEndl && log_detail[log_detail.size()] != '\n')
@@ -60,8 +76,7 @@ void Logger::printConsole(const string& log) {
 
 void Logger::writeLogFile(const string& log) {
 
-	string logDir = "log";
-
+	
 	check_LogDir(logDir);
 
 	string logPath = logDir + "\\latest.log";
