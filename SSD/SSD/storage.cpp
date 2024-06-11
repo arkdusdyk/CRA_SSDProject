@@ -248,33 +248,15 @@ private:
 		return stoul(ssdData[address], nullptr, 16);
 	}
 
-	bool mergeErase(vector<CommandSet> &commands) {
-		vector<Range> ranges;
-
+	bool mergeOverlappedErase(vector<CommandSet> &commands) {
 		bool isMerged = false;
 
-		for (const auto& cmd : commands)
-		{
-			if (cmd.cmdOpcode == COMMAND_ERASE)
-			{
-				ranges.push_back({ cmd.address, cmd.address + cmd.size - 1 });
-			}
-		}
-		if (ranges.size() <= 1)
+		vector<Range> eraseRanges = makeEraseRangeSet(commands);
+		if (eraseRanges.size() <= 1)
 			return isMerged;
 
-		vector<Range> result;
-		sort(ranges.begin(), ranges.end());
+		vector<Range> result = mergeOverlappedRangeSet(eraseRanges);
 
-		result.push_back(ranges[0]);
-		for (size_t i = 1; i < ranges.size(); ++i) {
-			if (result.back().second >= ranges[i].first - 1) {
-				result.back().second = max(result.back().second, ranges[i].second);
-			}
-			else {
-				result.push_back(ranges[i]);
-			}
-		}
 		for (auto cmd = commands.begin(); cmd != commands.end();)
 		{
 			bool erasedRange = false;
@@ -311,8 +293,37 @@ private:
 		return isMerged;
 	}
 
-	bool mergeWriteAndThenErase(vector<CommandSet>& commands) {
+	std::vector<Range> mergeOverlappedRangeSet(std::vector<Range>& eraseRanges)
+	{
+		std::vector<Range> result;
+		sort(eraseRanges.begin(), eraseRanges.end());
 
+		result.push_back(eraseRanges[0]);
+		for (size_t i = 1; i < eraseRanges.size(); ++i) {
+			if (result.back().second >= eraseRanges[i].first - 1) {
+				result.back().second = max(result.back().second, eraseRanges[i].second);
+			}
+			else {
+				result.push_back(eraseRanges[i]);
+			}
+		}
+		return result;
+	}
+
+	std::vector<Range> makeEraseRangeSet(std::vector<CommandSet>& commands)
+	{
+		std::vector<Range> result;
+		for (const auto& cmd : commands)
+		{
+			if (cmd.cmdOpcode == COMMAND_ERASE)
+			{
+				result.push_back({ cmd.address, cmd.address + cmd.size - 1 });
+			}
+		}
+		return result;
+	}
+
+	bool mergeOverlappedWriteAndErase(vector<CommandSet>& commands) {
 		bool isMerged = false;
 
 		for (vector<CommandSet>::iterator cmd = std::prev(commands.end()); cmd > commands.begin();)
@@ -320,30 +331,9 @@ private:
 			bool IsErasedWrite = false;
 			if (cmd->cmdOpcode == COMMAND_ERASE || cmd->cmdOpcode == COMMAND_WRITE)
 			{
-				int beginAddress = cmd->address;
-				int endAddress;
-				if (cmd->cmdOpcode == COMMAND_ERASE) endAddress = cmd->address + cmd->size - 1;
-				else if (cmd->cmdOpcode == COMMAND_WRITE) endAddress = cmd->address;
-
-				for (vector<CommandSet>::iterator cmdUnder = std::prev(cmd); cmdUnder >= commands.begin();)
-				{
-					if (cmdUnder->cmdOpcode == COMMAND_WRITE)
-					{
-						if (beginAddress <= cmdUnder->address && cmdUnder->address <= endAddress)
-						{
-							cmdUnder = commands.erase(cmdUnder);
-							IsErasedWrite = true;
-							isMerged = true;
-						}
-					}
-					
-					if (cmdUnder == commands.begin())
-						break;
-					--cmdUnder;
-				}
+				IsErasedWrite = scanPreviousWriteMergeSameRangeWriteErase(cmd, commands);
 			}
 
-	
 			if (IsErasedWrite == false)
 			{ 
 				--cmd;
@@ -355,7 +345,41 @@ private:
 				While this approach ensures safe access, it may impact performance.
 				*/
 				cmd = std::prev(commands.end());
+				isMerged = true;
 			}
+		}
+		return isMerged;
+	}
+
+	bool scanPreviousWriteMergeSameRangeWriteErase(std::vector<CommandSet>::iterator& cmd, std::vector<CommandSet>& commands)
+	{
+		bool isMerged = false;
+		int beginAddress = cmd->address;
+		int endAddress = cmd->address;
+		if (cmd->cmdOpcode == COMMAND_ERASE) endAddress = cmd->address + cmd->size - 1;
+		else if (cmd->cmdOpcode == COMMAND_WRITE) endAddress = cmd->address;
+
+		for (vector<CommandSet>::iterator cmdUnder = std::prev(cmd); cmdUnder >= commands.begin();)
+		{
+			if (cmdUnder->cmdOpcode == COMMAND_WRITE)
+			{
+				isMerged = mergePreviousWriteIfSameRange(beginAddress, cmdUnder, endAddress, commands);
+			}
+
+			if (cmdUnder == commands.begin())
+				break;
+			--cmdUnder;
+		}
+		return isMerged;
+	}
+
+	bool mergePreviousWriteIfSameRange(int beginAddress, std::vector<CommandSet>::iterator& cmdUnder, int endAddress, std::vector<CommandSet>& commands)
+	{
+		bool isMerged = false;
+		if (beginAddress <= cmdUnder->address && cmdUnder->address <= endAddress)
+		{
+			cmdUnder = commands.erase(cmdUnder);
+			isMerged = true;
 		}
 		return isMerged;
 	}
@@ -414,19 +438,24 @@ private:
 
 		if (cmd.cmdOpcode == SSD::COMMAND_ERASE)
 		{
-			mergeErase(cmdlist);
+			mergeOverlappedErase(cmdlist);
 		}
 
 		if (cmd.cmdOpcode == SSD::COMMAND_ERASE || cmd.cmdOpcode == SSD::COMMAND_WRITE)
 		{
-			mergeWriteAndThenErase(cmdlist);
+			mergeOverlappedWriteAndErase(cmdlist);
 		}
 
 		writeCommand(cmdlist);
-		if (cmdlist.size() >= 10) {
+		if (IsBufferFull(cmdlist)) {
 			Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Command Buffering Auto Flush"));
 			flush();
 		}
+	}
+
+	bool IsBufferFull(std::vector<CommandSet>& cmdlist)
+	{
+		return cmdlist.size() >= 10;
 	}
 
 	vector<CommandSet> getCommandList() {
