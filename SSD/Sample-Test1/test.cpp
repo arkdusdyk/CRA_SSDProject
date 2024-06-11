@@ -31,12 +31,9 @@ public:
     }
 
     void TearDown() override {
-        LPCWSTR nandPath = L"nand.txt";
-        LPCWSTR outputPath = L"result.txt";
-        LPCWSTR cmdlistPath = L"cmdlist.txt";
-        DeleteFile(nandPath);
-        DeleteFile(outputPath);
-        DeleteFile(cmdlistPath);
+        DeleteFile(wstring(NAND.begin(), NAND.end()).c_str());
+        DeleteFile(wstring(OUTPUT.begin(), OUTPUT.end()).c_str());
+        DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
     };
 
     int readResult()
