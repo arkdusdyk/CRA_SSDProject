@@ -10,7 +10,7 @@
 
 using namespace std;
 
-class ICommand {
+interface ICommand {
 public:
 	static const int COMMAND_VALIDATION_SUCCESS = 0;
 	static const int COMMAND_VALIDATION_FAIL = -1;
