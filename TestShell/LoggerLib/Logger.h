@@ -23,7 +23,8 @@ public:
 	}
 	void write_Log(eLoggingOpt loggingOption, string functionName, string log_detail, bool addEndl = true);
 private:
-	string logDir;
+	string logDir = "log";
+	string processName;
 	tm* now_time;
 
 	Logger();

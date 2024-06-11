@@ -18,10 +18,10 @@ Logger::Logger() {
 		QueryFullProcessImageNameA(process_handle, 0, buffer, &buffer_size);
 		CloseHandle(process_handle);
 
-		string processName(buffer);
-		processName.erase(processName.find_last_of("."), std::string::npos);
-		auto idx = processName.find_last_of('\\');
-		logDir = "log"+ processName.substr(idx, processName.length() - idx);
+		string processPath(buffer);
+		processPath.erase(processPath.find_last_of("."), std::string::npos);
+		auto idx = processPath.find_last_of('\\');
+		processName = processPath.substr(idx, processPath.length() - idx);
 	}
 }
 
@@ -75,8 +75,6 @@ void Logger::printConsole(const string& log) {
 }
 
 void Logger::writeLogFile(const string& log) {
-
-	
 	check_LogDir(logDir);
 
 	string logPath = logDir + "\\latest.log";
@@ -93,8 +91,16 @@ void Logger::check_LogDir(std::string& logDir)
 {
 	filesystem::path dirPath(logDir);
 	if (filesystem::exists(dirPath) == false) {
+
 		if (create_directory(dirPath) == false)
-			throw exception("Directory 积己 角菩");
+			throw exception("Log Directory 积己 角菩");
+	}
+
+	dirPath = logDir + processName;
+	if (filesystem::exists(dirPath) == false) {
+
+		if (create_directory(dirPath) == false)
+			throw exception("Log\\[Process] Directory 积己 角菩");
 	}
 }
 
