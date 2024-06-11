@@ -111,7 +111,7 @@ public:
 		}
 		DeleteFile(wstring(CMDFILE.begin(), CMDFILE.end()).c_str());
 
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Complete Flush (") + to_string(cmdset.size()) + " Commands)");
+		LOGGER(string("Complete Flush (") + to_string(cmdset.size()) + " Commands)");
 	}
 
 private:
@@ -218,7 +218,6 @@ private:
 	{
 		vector<CommandSet> cmdset = getCommandList();
 		for (vector<CommandSet>::iterator it = cmdset.end(); it != cmdset.begin();)
-		//for (auto& cmd : cmdset)
 		{
 			it--;
 			if (it->cmdOpcode == SSD::COMMAND_WRITE && it->address == cmd.address)
@@ -407,7 +406,7 @@ private:
 		int address = cmd.address;
 		int data = cmd.data;
 		
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Write(LBA: ") + to_string(cmd.address) + ", Data: " + IntToHexUppercaseString(data) + ") (To Nand)");
+		LOGGER(string("Write(LBA: ") + to_string(cmd.address) + ", Data: " + IntToHexUppercaseString(data) + ") (To Nand)");
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -420,7 +419,7 @@ private:
 		int address = cmd.address;
 		int size = cmd.size;
 
-		Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Erase(LBA: ") + to_string(cmd.address) + " ~ " + to_string(cmd.address + cmd.size - 1) + ") (To Nand)");
+		LOGGER(string("Erase(LBA: ") + to_string(cmd.address) + " ~ " + to_string(cmd.address + cmd.size - 1) + ") (To Nand)");
 
 		checkDataInit();
 		ssdData = getSsdData();
@@ -448,7 +447,7 @@ private:
 
 		saveCommandBuffer(cmdlist);
 		if (IsBufferFull(cmdlist)) {
-			Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Command Buffering Auto Flush"));
+			LOGGER(string("Command Buffering Auto Flush"));
 			flush();
 		}
 	}
