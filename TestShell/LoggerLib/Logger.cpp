@@ -84,7 +84,7 @@ void Logger::writeLogFile(const string& log) {
 	}
 	logFile.close();
 
-	check_Filesize(logPath, logDir);
+	check_Filesize(logPath);
 }
 
 void Logger::check_LogDir(std::string& logDir)
@@ -104,26 +104,26 @@ void Logger::check_LogDir(std::string& logDir)
 	}
 }
 
-void Logger::check_Filesize(std::string& logPath, std::string& logDir)
+void Logger::check_Filesize(std::string& logPath)
 {
 	auto fileSize = filesystem::file_size(logPath);
 	// 파일 크기 체크 및 변환 구현 필요.
 	if (fileSize > 10240)
 	{
-		press_PrevUntillLog(logDir);
+		press_PrevUntillLog();
 
-		make_UntillLog(logDir, logPath);
+		make_UntillLog(logPath);
 	}
 }
 
-void Logger::press_PrevUntillLog(std::string& logDir)
+void Logger::press_PrevUntillLog()
 {
-	string prevFilePath = logDir + "\\untill*.log";
+	string prevFilePath = logDir + processName + "\\untill*.log";
 	struct _finddata_t fd;
 	intptr_t handle;
 	if ((handle = _findfirst(prevFilePath.c_str(), &fd)) != -1L) {
 		do {
-			string prevFilename = logDir + "\\" + fd.name;
+			string prevFilename = logDir+processName + "\\" + fd.name;
 			pressLogFile(prevFilename);
 
 		} while (_findnext(handle, &fd) == 0);
@@ -145,9 +145,9 @@ void Logger::pressLogFile(string prevFilename) {
 	filesystem::rename(prevFilename, chgFilename);
 }
 
-void Logger::make_UntillLog(std::string& logDir, std::string& logPath)
+void Logger::make_UntillLog(std::string& logPath)
 {
-	string newName = logDir;
+	string newName = logDir + processName;
 	char temp[128];
 	strftime(temp, sizeof(temp), "%Y%m%d %Hh%Mm%Ss", now_time);
 	newName.append("\\untill_");
