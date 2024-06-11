@@ -362,7 +362,8 @@ private:
 		{
 			if (cmdUnder->cmdOpcode == COMMAND_WRITE)
 			{
-				isMerged = mergePreviousWriteIfSameRange(beginAddress, cmdUnder, endAddress, commands);
+				if (mergePreviousWriteIfSameRange(beginAddress, cmdUnder, endAddress, commands))
+					isMerged = true;
 			}
 
 			if (cmdUnder == commands.begin())
