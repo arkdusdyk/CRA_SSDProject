@@ -151,9 +151,6 @@
     <ClCompile Include="WriteCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\x64\Debug\run_list.lst" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="json.hpp" />
     <ClInclude Include="TestCase.h" />
   </ItemGroup>
