@@ -25,15 +25,15 @@ public:
 	void clearResult() {
 		result.clear();
 	}
-	
+
 	void command_parse(string cmd_line) {
 		if (cmd_line == "")
 			throw exception("No Command");
 
 		vector<string> tokens;
 		tokens.clear();
-		int prev = 0;
-		int cur = cmd_line.find(' ');
+		size_t prev = 0;
+		size_t cur = cmd_line.find(' ');
 		while (cur != string::npos) {
 			string substring = cmd_line.substr(prev, cur - prev);
 			tokens.push_back(substring);
@@ -41,10 +41,10 @@ public:
 			cur = cmd_line.find(' ', prev);
 		}
 		tokens.push_back(cmd_line.substr(prev, cur - prev));
-		int token_n = tokens.size();
+		size_t token_n = tokens.size();
 		if (token_n == 1) {
 			cmd = tokens[0];
-			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1")||(cmd == "testapp2") || (cmd == "flush")) {
+			if ((cmd == "exit") || (cmd == "help") || (cmd == "fullread") || (cmd == "testapp1") || (cmd == "testapp2") || (cmd == "flush")) {
 			}
 			else
 				throw exception("INVALID COMMAND");
@@ -94,7 +94,7 @@ public:
 			else
 				throw exception("INVALID COMMAND");
 		}
-		else if(token_n > 3)
+		else if (token_n > 3)
 			throw exception("INVALID COMMAND");
 	}
 
