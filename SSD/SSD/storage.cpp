@@ -384,7 +384,7 @@ private:
 		return isMerged;
 	}
 
-	void writeCommand(vector<CommandSet> cmdlist) {
+	void saveCommandBuffer(vector<CommandSet> cmdlist) {
 		ofstream cmdFile(CMDFILE);
 		if (!cmdFile.is_open()) {
 			throw ssd_exception("Cannot Open File");
@@ -446,7 +446,7 @@ private:
 			mergeOverlappedWriteAndErase(cmdlist);
 		}
 
-		writeCommand(cmdlist);
+		saveCommandBuffer(cmdlist);
 		if (IsBufferFull(cmdlist)) {
 			Logger::GetInstance().write_Log(LOGTYPE, LOGTAG, string("Command Buffering Auto Flush"));
 			flush();
