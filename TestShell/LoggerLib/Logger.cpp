@@ -13,16 +13,15 @@ Logger::Logger() {
 	DWORD process_id = GetCurrentProcessId();
 	HANDLE process_handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, process_id);
 	if (process_handle) {
-		wchar_t buffer[MAX_PATH] = {};
+		char buffer[MAX_PATH] = {};
 		DWORD buffer_size = MAX_PATH;
-		QueryFullProcessImageNameW(process_handle, 0, buffer, &buffer_size);
+		QueryFullProcessImageNameA(process_handle, 0, buffer, &buffer_size);
 		CloseHandle(process_handle);
 
-		wstring wsFilePath(buffer);	
-		wsFilePath.erase(wsFilePath.find_last_of(L"."), std::wstring::npos);
-		auto idx = wsFilePath.find_last_of('\\');
-		auto wsProcessName = wsFilePath.substr(idx, wsFilePath.length() - idx);
-		processName.insert(processName.begin(), wsProcessName.begin(), wsProcessName.end());
+		string processName(buffer);
+		processName.erase(processName.find_last_of("."), std::string::npos);
+		auto idx = processName.find_last_of('\\');
+		logDir = "log"+ processName.substr(idx, processName.length() - idx);
 	}
 }
 
@@ -77,7 +76,7 @@ void Logger::printConsole(const string& log) {
 
 void Logger::writeLogFile(const string& log) {
 
-	string logDir = "log"+ processName;
+	
 	check_LogDir(logDir);
 
 	string logPath = logDir + "\\latest.log";
